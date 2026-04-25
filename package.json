@@ -1,9 +1,17 @@
 {
   "name": "emailcraft",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "Embeddable React component library for visual email template management. Ships <EmailTemplatePanel> (authoring) and <EmailTemplateViewer> (read-only browsing).",
   "type": "module",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/breezyx28/RETM-library.git"
+  },
+  "homepage": "https://github.com/breezyx28/RETM-library#readme",
+  "bugs": {
+    "url": "https://github.com/breezyx28/RETM-library/issues"
+  },
   "sideEffects": [
     "**/*.css"
   ],
@@ -33,6 +41,11 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage",
+    "test:coverage:enforce": "vitest run --coverage --coverage.thresholds.lines=70 --coverage.thresholds.functions=70 --coverage.thresholds.branches=60 --coverage.thresholds.statements=70",
+    "changeset": "changeset",
+    "version-packages": "changeset version",
+    "release": "changeset publish",
+    "prepublishOnly": "npm run typecheck && npm run test && npm run build",
     "clean": "rimraf dist",
     "playground": "npm --prefix playground run dev"
   },
@@ -70,6 +83,7 @@
     "zustand": "^5.0.0"
   },
   "devDependencies": {
+    "@changesets/cli": "^2.31.0",
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^16.3.2",
     "@testing-library/user-event": "^14.6.1",

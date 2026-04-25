@@ -95,6 +95,58 @@ The playground at [playground/src/App.tsx](./playground/src/App.tsx) mounts both
 
 ---
 
+## Release workflow
+
+EmailCraft uses a Changesets-based release flow.
+
+```bash
+# 1) Create release note and bump intent
+npm run changeset
+
+# 2) Apply version/changelog updates
+npm run version-packages
+
+# 3) Publish (usually done by CI release workflow)
+npm run release
+```
+
+On every push to `main`, the release workflow can open/update a release PR and publish when merged, if `NPM_TOKEN` is configured.
+
+Required GitHub repository secrets:
+
+- `NPM_TOKEN`: npm automation token with publish access to `emailcraft`
+
+### Versioning policy
+
+- `patch`: bug fixes and non-breaking internal improvements
+- `minor`: backward-compatible feature additions
+- `major`: breaking API or behavior changes
+
+---
+
+## Integration notes
+
+### CSS and themes
+
+- Import `emailcraft/styles.css` once in your app root.
+- Theme tokens are CSS variables prefixed with `--ec-*` and can be overridden in host app CSS.
+- Tailwind consumers can extend tokens via `emailcraft/tailwind-preset`.
+
+### Next.js / SSR
+
+- `EmailTemplatePanel` and `EmailTemplateViewer` are interactive client components; in Next.js App Router, mount them in `"use client"` components.
+- Keep export/storage callbacks in client-safe boundaries or pass API-bound callbacks from client hooks.
+
+### Backend callback contracts
+
+- `onLoad`: returns a list of templates (or template-specific loaders, based on selected storage mode).
+- `onSave`: persists template payload updates from editor actions.
+- `onPublish`: final publish action for review/approval flows.
+
+For detailed field shape, use exported TypeScript types from `emailcraft`.
+
+---
+
 ## Project structure
 
 ```
