@@ -1,0 +1,159 @@
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  margin: 0;
+  min-height: 100vh;
+  font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
+}
+
+body {
+  background: #f3f4f6;
+  color: #111827;
+  transition: background 180ms ease, color 180ms ease;
+}
+
+[data-pg-theme='dark'],
+body:has([data-pg-theme='dark']) {
+  background: #020617;
+  color: #e2e8f0;
+}
+
+.pg-shell {
+  max-width: 1240px;
+  margin: 0 auto;
+  padding: 48px 24px 96px;
+  display: flex;
+  flex-direction: column;
+  gap: 48px;
+}
+
+.pg-header h1 {
+  margin: 0;
+  font-size: 32px;
+  letter-spacing: -0.02em;
+}
+
+.pg-header p {
+  margin: 8px 0 0;
+  color: #6b7280;
+  max-width: 720px;
+}
+
+[data-pg-theme='dark'] .pg-header p {
+  color: #94a3b8;
+}
+
+.pg-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-top: 16px;
+  padding: 12px 16px;
+  background: rgba(255, 255, 255, 0.7);
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+}
+
+[data-pg-theme='dark'] .pg-controls {
+  background: rgba(15, 23, 42, 0.7);
+  border-color: #334155;
+}
+
+.pg-ctrl {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: #374151;
+}
+
+[data-pg-theme='dark'] .pg-ctrl {
+  color: #cbd5e1;
+}
+
+.pg-ctrl select {
+  padding: 4px 8px;
+  border-radius: 6px;
+  border: 1px solid #d1d5db;
+  background: white;
+}
+
+[data-pg-theme='dark'] .pg-ctrl select {
+  background: #1e293b;
+  color: #f1f5f9;
+  border-color: #334155;
+}
+
+.pg-section {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.pg-section-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.pg-section h2 {
+  margin: 0;
+  font-size: 14px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #6b7280;
+}
+
+[data-pg-theme='dark'] .pg-section h2 {
+  color: #94a3b8;
+}
+
+.pg-muted {
+  margin: 0;
+  color: #6b7280;
+  font-size: 13px;
+}
+
+[data-pg-theme='dark'] .pg-muted {
+  color: #94a3b8;
+}
+
+.pg-btn {
+  appearance: none;
+  padding: 8px 14px;
+  font-size: 13px;
+  font-weight: 500;
+  background: #111827;
+  color: white;
+  border: 1px solid #111827;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 160ms ease, transform 160ms ease;
+}
+
+.pg-btn:hover {
+  background: #374151;
+}
+
+[data-pg-theme='dark'] .pg-btn {
+  background: #f1f5f9;
+  color: #0f172a;
+  border-color: #f1f5f9;
+}
+
+code {
+  font-family: 'Fira Code', ui-monospace, monospace;
+  font-size: 12px;
+  padding: 1px 4px;
+  background: rgba(17, 24, 39, 0.08);
+  border-radius: 4px;
+}
+
+[data-pg-theme='dark'] code {
+  background: rgba(255, 255, 255, 0.08);
+}

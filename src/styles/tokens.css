@@ -1,0 +1,166 @@
+/*
+ * EmailCraft design tokens (spec §19).
+ *
+ * The `default` theme ships values inline. Other themes override via
+ * `.emailcraft-root[data-ec-theme='...']` blocks below.
+ */
+
+.emailcraft-root {
+  /* Color — base palette */
+  --ec-primary: #2563eb;
+  --ec-primary-hover: #1d4ed8;
+  --ec-primary-soft: rgba(37, 99, 235, 0.12);
+  --ec-accent: #f59e0b;
+
+  --ec-bg: #ffffff;
+  --ec-bg-secondary: #f9fafb;
+  --ec-bg-tertiary: #f3f4f6;
+  --ec-bg-overlay: rgba(17, 24, 39, 0.48);
+
+  --ec-border: #e5e7eb;
+  --ec-border-strong: #d1d5db;
+  --ec-ring: rgba(37, 99, 235, 0.35);
+
+  --ec-text: #111827;
+  --ec-text-secondary: #6b7280;
+  --ec-text-muted: #9ca3af;
+  --ec-text-inverse: #ffffff;
+
+  --ec-danger: #dc2626;
+  --ec-danger-hover: #b91c1c;
+  --ec-danger-soft: rgba(220, 38, 38, 0.1);
+
+  --ec-success: #16a34a;
+  --ec-warning: #d97706;
+  --ec-info: #2563eb;
+
+  /* Typography */
+  --ec-font:
+    'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue',
+    Arial, sans-serif;
+  --ec-font-mono:
+    'Fira Code', ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+
+  --ec-text-xs: 11px;
+  --ec-text-sm: 13px;
+  --ec-text-md: 14px;
+  --ec-text-lg: 16px;
+  --ec-text-xl: 18px;
+  --ec-text-2xl: 22px;
+  --ec-text-3xl: 28px;
+
+  /* Spacing scale (4-based) */
+  --ec-space-1: 4px;
+  --ec-space-2: 8px;
+  --ec-space-3: 12px;
+  --ec-space-4: 16px;
+  --ec-space-5: 20px;
+  --ec-space-6: 24px;
+  --ec-space-8: 32px;
+  --ec-space-10: 40px;
+  --ec-space-12: 48px;
+
+  /* Radii */
+  --ec-radius-sm: 4px;
+  --ec-radius: 8px;
+  --ec-radius-lg: 12px;
+  --ec-radius-xl: 16px;
+  --ec-radius-full: 999px;
+
+  /* Shadows */
+  --ec-shadow-sm: 0 1px 2px rgba(17, 24, 39, 0.06);
+  --ec-shadow: 0 2px 8px rgba(17, 24, 39, 0.08);
+  --ec-shadow-md:
+    0 4px 12px rgba(17, 24, 39, 0.08), 0 1px 3px rgba(17, 24, 39, 0.06);
+  --ec-shadow-lg:
+    0 24px 48px -12px rgba(17, 24, 39, 0.24),
+    0 8px 16px -4px rgba(17, 24, 39, 0.08);
+
+  /* Motion */
+  --ec-duration-fast: 120ms;
+  --ec-duration: 180ms;
+  --ec-ease: cubic-bezier(0.2, 0.8, 0.2, 1);
+
+  /* Z-index */
+  --ec-z-dialog: 1000;
+  --ec-z-popover: 1100;
+  --ec-z-tooltip: 1200;
+
+  color: var(--ec-text);
+  font-family: var(--ec-font);
+  font-size: var(--ec-text-md);
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+.emailcraft-root[data-ec-theme='dark'] {
+  --ec-primary: #3b82f6;
+  --ec-primary-hover: #60a5fa;
+  --ec-primary-soft: rgba(59, 130, 246, 0.18);
+  --ec-accent: #fbbf24;
+
+  --ec-bg: #0f172a;
+  --ec-bg-secondary: #1e293b;
+  --ec-bg-tertiary: #334155;
+  --ec-bg-overlay: rgba(0, 0, 0, 0.6);
+
+  --ec-border: #334155;
+  --ec-border-strong: #475569;
+  --ec-ring: rgba(59, 130, 246, 0.45);
+
+  --ec-text: #f1f5f9;
+  --ec-text-secondary: #94a3b8;
+  --ec-text-muted: #64748b;
+  --ec-text-inverse: #0f172a;
+
+  --ec-danger: #f87171;
+  --ec-danger-hover: #ef4444;
+  --ec-danger-soft: rgba(248, 113, 113, 0.15);
+
+  --ec-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4);
+  --ec-shadow: 0 2px 8px rgba(0, 0, 0, 0.35);
+  --ec-shadow-md: 0 4px 12px rgba(0, 0, 0, 0.4);
+  --ec-shadow-lg: 0 24px 48px -12px rgba(0, 0, 0, 0.6);
+}
+
+.emailcraft-root[data-ec-theme='minimal'] {
+  --ec-primary: #000000;
+  --ec-primary-hover: #111827;
+  --ec-primary-soft: rgba(0, 0, 0, 0.08);
+  --ec-bg: #ffffff;
+  --ec-bg-secondary: #fcfcfc;
+  --ec-bg-tertiary: #f5f5f5;
+  --ec-border: #efefef;
+  --ec-radius: 4px;
+}
+
+.emailcraft-root[data-ec-theme='editorial'] {
+  --ec-primary: #b45309;
+  --ec-primary-hover: #92400e;
+  --ec-primary-soft: rgba(180, 83, 9, 0.12);
+  --ec-bg: #fffdf7;
+  --ec-bg-secondary: #f9f3e7;
+  --ec-bg-tertiary: #f3ead8;
+  --ec-border: #e7e0d5;
+}
+
+.emailcraft-root[data-ec-theme='brutalist'] {
+  --ec-primary: #000000;
+  --ec-primary-hover: #111111;
+  --ec-primary-soft: rgba(0, 0, 0, 0.12);
+  --ec-accent: #facc15;
+  --ec-border: #000000;
+  --ec-radius: 0px;
+  --ec-shadow: 4px 4px 0 rgba(0, 0, 0, 1);
+}
+
+.emailcraft-root[data-ec-theme='glassmorphism'] {
+  --ec-primary: #6366f1;
+  --ec-primary-hover: #4f46e5;
+  --ec-primary-soft: rgba(99, 102, 241, 0.16);
+  --ec-bg: rgba(255, 255, 255, 0.72);
+  --ec-bg-secondary: rgba(255, 255, 255, 0.58);
+  --ec-bg-tertiary: rgba(255, 255, 255, 0.5);
+  --ec-border: rgba(255, 255, 255, 0.35);
+  --ec-radius: 16px;
+}

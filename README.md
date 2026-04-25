@@ -1,0 +1,167 @@
+# EmailCraft
+
+Embeddable React component library for visual email template management.
+
+Ships two components:
+
+- **`<EmailTemplatePanel>`** — full authoring surface for operation/admin teams: library view, visual editor, variable chips, block DnD, HTML export.
+- **`<EmailTemplateViewer>`** — read-only browser for internal staff (sales, support) to browse published templates with a split preview/code view.
+
+> Status: scaffolding complete. See [EmailCraft_Spec.md](./EmailCraft_Spec.md) for the full product spec and [Development phases](#development-phases) for the roadmap.
+
+---
+
+## Install
+
+```bash
+npm install emailcraft
+```
+
+Peer dependencies: `react >= 18`, `react-dom >= 18`.
+
+Import the default stylesheet once at your app root:
+
+```ts
+import 'emailcraft/styles.css'
+```
+
+## Quick start
+
+```tsx
+import { EmailTemplatePanel, type VariableSchema } from 'emailcraft'
+import 'emailcraft/styles.css'
+
+const variableSchema: VariableSchema = [
+  {
+    group: 'User',
+    color: '#3b82f6',
+    variables: [
+      { key: 'user.firstName', label: 'First Name', type: 'string', required: true, sample: 'John' },
+      { key: 'user.lastName',  label: 'Last Name',  type: 'string', required: true, sample: 'Doe'  },
+    ],
+  },
+]
+
+export default function App() {
+  return (
+    <EmailTemplatePanel
+      variableSchema={variableSchema}
+      tokenFormat="handlebars"
+      storageMode="local"
+      theme="default"
+      onExport={(payload) => console.log(payload)}
+    />
+  )
+}
+```
+
+Read-only viewer for published templates:
+
+```tsx
+import { EmailTemplateViewer } from 'emailcraft'
+
+<EmailTemplateViewer
+  storageMode="backend"
+  onLoad={() => fetch('/api/templates?status=published').then(r => r.json())}
+  defaultView="grid"
+  codeView={{ enabled: true, showLineNumbers: true, copyButton: true }}
+/>
+```
+
+See spec sections §3.1 and §3.2 for the full prop reference.
+
+---
+
+## Local development
+
+```bash
+# install library deps
+npm install
+
+# install playground deps
+npm --prefix playground install
+
+# run playground (Vite, aliased to live src/)
+npm run playground
+
+# build library (dist/ with ESM + CJS + .d.ts)
+npm run build
+
+# typecheck
+npm run typecheck
+```
+
+The playground at [playground/src/App.tsx](./playground/src/App.tsx) mounts both components with a sample schema and hot-reloads against the library source via a Vite alias — no rebuild step needed while iterating.
+
+---
+
+## Project structure
+
+```
+email-craft/
+  src/
+    index.ts                       public barrel
+    components/
+      EmailTemplatePanel/          authoring surface (spec §3.1, §6)
+      EmailTemplateViewer/         read-only browser  (spec §3.2, §21)
+    types/                         VariableSchema, Template, Token, Theme
+    styles/tokens.css              --ec-* CSS variables (spec §19)
+    utils/
+  playground/                      local Vite dev app
+  EmailCraft_Spec.md               full product spec
+```
+
+---
+
+## Development phases
+
+The library is built in three phases, locked to [EmailCraft_Spec.md §23](./EmailCraft_Spec.md).
+
+### Phase 1 — Core MVP
+
+- `<EmailTemplatePanel>` Dialog shell + library view
+- TipTap editor + variable chip node
+- Variable schema ingestion + side panel
+- Blocks: Text, Image (URL), Button, Divider, Spacer
+- Token format system (`handlebars` + `custom`)
+- HTML export with `juice` (production + plain modes)
+- `localStorage` persistence
+- Desktop/Mobile canvas preview
+- Default + Dark themes
+- CSS variable override system
+
+### Phase 2 — Full Feature
+
+- All remaining blocks + 2/3-column layouts
+- Conditional + Loop blocks
+- Attachment / file link system with URL auto-detection
+- Backend + hybrid storage modes
+- Validation system + pre-export modal
+- SEO / metadata panel
+- Persistent version history (versions = undo/redo)
+- Multi-language per template + RTL canvas flip
+- Folders + tag filter
+- `<EmailTemplateViewer>` split preview/code view (Shiki)
+- All 6 themes + Tailwind preset
+
+### Phase 3 — Polish & Advanced
+
+- Rendered-HTML thumbnails
+- Dark mode + plain-text previews
+- Test send callback
+- Role-based permissions UI
+- Saved Blocks Library (personal + shared)
+- Headless mode + full `data-ec-*` coverage
+- Approval workflow activation
+- Version diff view
+- WCAG contrast checker
+
+---
+
+## Browser support
+
+Chrome / Firefox / Edge 90+, Safari 14+, iOS 14+. IE11 is not supported. See spec §18 for details.
+
+## License
+
+MIT

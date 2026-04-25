@@ -1,0 +1,13 @@
+/*
+ * EmailCraft stylesheet entry point.
+ *
+ * Consumers import this once at their app root:
+ *   import 'emailcraft/styles.css'
+ *
+ * The build pipeline (`tsup` + esbuild) resolves the @imports below into a
+ * single bundled `dist/styles.css`.
+ */
+
+@import './tokens.css';
+@import './panel.css';
+@import './editor.css';
