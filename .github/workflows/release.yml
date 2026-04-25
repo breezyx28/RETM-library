@@ -2,18 +2,24 @@ name: Release
 
 on:
   push:
-    branches: master
+    branches: [master, main]
+    paths:
+      - 'src/**'
+      - 'package.json'
+      - 'README.md'
 
 permissions:
   contents: write
-  pull-requests: write
 
 jobs:
   release:
+    if: github.actor != 'github-actions[bot]'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Setup Node
         uses: actions/setup-node@v4
@@ -28,13 +34,24 @@ jobs:
       - name: Validate
         run: npm run typecheck && npm run test && npm run build
 
-      - name: Create Release PR or Publish
-        uses: changesets/action@v1
-        with:
-          version: npm run version-packages
-          publish: npm run release
-          title: Release retm-library
-          commit: Release retm-library
+      - name: Bump patch version
+        run: npm version patch --no-git-tag-version
+
+      - name: Publish package
+        run: npm publish --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Read bumped version
+        id: version
+        run: echo "value=$(node -p "require('./package.json').version")" >> "$GITHUB_OUTPUT"
+
+      - name: Commit and push version bump
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add package.json package-lock.json
+          git commit -m "chore(release): bump version to v${{ steps.version.outputs.value }} [skip ci]"
+          git push
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
