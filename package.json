@@ -1,6 +1,6 @@
 {
   "name": "emailcraft",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Embeddable React component library for visual email template management. Ships <EmailTemplatePanel> (authoring) and <EmailTemplateViewer> (read-only browsing).",
   "type": "module",
   "license": "MIT",
