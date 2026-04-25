@@ -16,7 +16,7 @@
 
     "baseUrl": ".",
     "paths": {
-      "emailcraft": ["../src/index.ts"]
+      "retm-library": ["../src/index.ts"]
     }
   },
   "include": ["src", "vite.config.ts"]

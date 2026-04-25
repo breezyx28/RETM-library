@@ -1,20 +1,20 @@
 /*
- * EmailCraft panel stylesheet.
+ * RETM Library panel stylesheet.
  *
- * Every selector is scoped under `.emailcraft-root` or targets a `data-ec-*`
+ * Every selector is scoped under `.retm-library-root` or targets a `data-ec-*`
  * attribute that only exists inside a panel/viewer, so none of these rules
  * leak into the host app.
  *
  * Rendered portals (Radix Dialog, DropdownMenu, AlertDialog) escape the
- * `.emailcraft-root` subtree — their content uses pure `[data-ec-*]`
+ * `.retm-library-root` subtree — their content uses pure `[data-ec-*]`
  * selectors so styles still apply from the portalled body.
  */
 
 /* ---------- Primitives ------------------------------------------------- */
 
-.emailcraft-root *,
-.emailcraft-root *::before,
-.emailcraft-root *::after,
+.retm-library-root *,
+.retm-library-root *::before,
+.retm-library-root *::after,
 [data-ec-overlay] *,
 [data-ec-shell] *,
 [data-ec-menu] *,

@@ -30,7 +30,7 @@ export function PanelShell(props: PanelShellProps) {
     defaultOpen,
     onOpenChange,
     trigger,
-    title = 'EmailCraft — Template Panel',
+    title = 'RETM Library — Template Panel',
     children,
   } = props
 

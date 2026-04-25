@@ -8,7 +8,7 @@ This folder controls package versioning and release notes.
 npm run changeset
 ```
 
-Pick the package (`emailcraft`), select semver bump type, and write a short summary.
+Pick the package (`retm-library`), select semver bump type, and write a short summary.
 
 ## Version packages
 

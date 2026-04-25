@@ -1,4 +1,4 @@
-# EmailCraft
+# RETM Library
 
 Embeddable React component library for visual email template management.
 
@@ -7,14 +7,14 @@ Ships two components:
 - **`<EmailTemplatePanel>`** — full authoring surface for operation/admin teams: library view, visual editor, variable chips, block DnD, HTML export.
 - **`<EmailTemplateViewer>`** — read-only browser for internal staff (sales, support) to browse published templates with a split preview/code view.
 
-> Status: scaffolding complete. See [EmailCraft_Spec.md](./EmailCraft_Spec.md) for the full product spec and [Development phases](#development-phases) for the roadmap.
+> Status: scaffolding complete. See [retm-library-spec.md](./retm-library-spec.md) for the full product spec and [Development phases](#development-phases) for the roadmap.
 
 ---
 
 ## Install
 
 ```bash
-npm install emailcraft
+npm install retm-library
 ```
 
 Peer dependencies: `react >= 18`, `react-dom >= 18`.
@@ -22,14 +22,14 @@ Peer dependencies: `react >= 18`, `react-dom >= 18`.
 Import the default stylesheet once at your app root:
 
 ```ts
-import 'emailcraft/styles.css'
+import 'retm-library/styles.css'
 ```
 
 ## Quick start
 
 ```tsx
-import { EmailTemplatePanel, type VariableSchema } from 'emailcraft'
-import 'emailcraft/styles.css'
+import { EmailTemplatePanel, type VariableSchema } from 'retm-library'
+import 'retm-library/styles.css'
 
 const variableSchema: VariableSchema = [
   {
@@ -58,7 +58,7 @@ export default function App() {
 Read-only viewer for published templates:
 
 ```tsx
-import { EmailTemplateViewer } from 'emailcraft'
+import { EmailTemplateViewer } from 'retm-library'
 
 <EmailTemplateViewer
   storageMode="backend"
@@ -97,7 +97,7 @@ The playground at [playground/src/App.tsx](./playground/src/App.tsx) mounts both
 
 ## Release workflow
 
-EmailCraft uses a Changesets-based release flow.
+RETM Library uses a Changesets-based release flow.
 
 ```bash
 # 1) Create release note and bump intent
@@ -110,11 +110,11 @@ npm run version-packages
 npm run release
 ```
 
-On every push to `main`, the release workflow can open/update a release PR and publish when merged, if `NPM_TOKEN` is configured.
+On every push to the default branch configured in `.github/workflows/release.yml`, the release workflow can open/update a release PR and publish when merged, if `NPM_TOKEN` is configured.
 
 Required GitHub repository secrets:
 
-- `NPM_TOKEN`: npm automation token with publish access to `emailcraft`
+- `NPM_TOKEN`: npm automation token with publish access to `retm-library`
 
 ### Versioning policy
 
@@ -128,9 +128,9 @@ Required GitHub repository secrets:
 
 ### CSS and themes
 
-- Import `emailcraft/styles.css` once in your app root.
-- Theme tokens are CSS variables prefixed with `--ec-*` and can be overridden in host app CSS.
-- Tailwind consumers can extend tokens via `emailcraft/tailwind-preset`.
+- Import `retm-library/styles.css` once in your app root.
+- Theme tokens are CSS variables prefixed with `--ec-*` and can be overridden in host app CSS. Styles are scoped under the root wrapper class **`.retm-library-root`** (applied by the library unless `headless={true}`).
+- Tailwind consumers can extend tokens via `retm-library/tailwind-preset`.
 
 ### Next.js / SSR
 
@@ -143,14 +143,14 @@ Required GitHub repository secrets:
 - `onSave`: persists template payload updates from editor actions.
 - `onPublish`: final publish action for review/approval flows.
 
-For detailed field shape, use exported TypeScript types from `emailcraft`.
+For detailed field shape, use exported TypeScript types from `retm-library`.
 
 ---
 
 ## Project structure
 
 ```
-email-craft/
+retm-library/
   src/
     index.ts                       public barrel
     components/
@@ -160,14 +160,14 @@ email-craft/
     styles/tokens.css              --ec-* CSS variables (spec §19)
     utils/
   playground/                      local Vite dev app
-  EmailCraft_Spec.md               full product spec
+  retm-library-spec.md             full product spec
 ```
 
 ---
 
 ## Development phases
 
-The library is built in three phases, locked to [EmailCraft_Spec.md §23](./EmailCraft_Spec.md).
+The library is built in three phases, locked to [retm-library-spec.md §23](./retm-library-spec.md).
 
 ### Phase 1 — Core MVP
 

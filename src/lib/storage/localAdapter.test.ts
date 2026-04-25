@@ -6,7 +6,7 @@ describe('createLocalStorageAdapter', () => {
   })
 
   it('persists templates and versions', async () => {
-    const adapter = createLocalStorageAdapter({ storageKey: 'test:emailcraft' })
+    const adapter = createLocalStorageAdapter({ storageKey: 'test:retm-library' })
     const now = '2026-01-01T00:00:00.000Z'
     const template = {
       id: 'tpl_1',

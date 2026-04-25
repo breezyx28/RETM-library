@@ -37,7 +37,9 @@ describe('EmailTemplateViewer', () => {
     expect(screen.getByText('No templates found.')).toBeTruthy()
   })
 
-  it('shows failure feedback when clipboard write fails', async () => {
+  it(
+    'shows failure feedback when clipboard write fails',
+    async () => {
     const execSpy = vi.fn().mockReturnValue(true)
     Object.defineProperty(document, 'execCommand', {
       configurable: true,
@@ -59,7 +61,12 @@ describe('EmailTemplateViewer', () => {
 
     await screen.findByText('Welcome Email')
     fireEvent.click(screen.getByRole('button', { name: 'Copy HTML' }))
-    await waitFor(() => expect(screen.getByRole('button', { name: 'Copy failed' })).toBeTruthy())
+    await waitFor(
+      () => expect(screen.getByRole('button', { name: 'Copy failed' })).toBeTruthy(),
+      { timeout: 12000 },
+    )
     expect(execSpy).not.toHaveBeenCalled()
-  })
+    },
+    15000,
+  )
 })

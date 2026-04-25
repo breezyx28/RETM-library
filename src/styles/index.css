@@ -1,8 +1,8 @@
 /*
- * EmailCraft stylesheet entry point.
+ * RETM Library stylesheet entry point.
  *
  * Consumers import this once at their app root:
- *   import 'emailcraft/styles.css'
+ *   import 'retm-library/styles.css'
  *
  * The build pipeline (`tsup` + esbuild) resolves the @imports below into a
  * single bundled `dist/styles.css`.

@@ -1,4 +1,4 @@
-# EmailCraft — Visual Email Template Library
+# RETM Library — Visual Email Template Library
 ### Product Specification & Development Blueprint
 > Version 1.4 | Status: ✅ Spec Complete — Ready for Development
 
@@ -6,10 +6,10 @@
 
 ## 1. Overview
 
-EmailCraft is an embeddable React component library for visual email template management. It ships **two top-level components**: `<EmailTemplatePanel>` for admin/operation teams to create, edit, and manage templates, and `<EmailTemplateViewer>` for internal staff (sales, support) to browse and inspect published templates in read-only mode. The library is framework-agnostic within the React ecosystem, fully themeable at both developer and UI level, cross-browser compatible, and outputs fully responsive, email-client-safe HTML.
+RETM Library is an embeddable React component library for visual email template management. It ships **two top-level components**: `<EmailTemplatePanel>` for admin/operation teams to create, edit, and manage templates, and `<EmailTemplateViewer>` for internal staff (sales, support) to browse and inspect published templates in read-only mode. The library is framework-agnostic within the React ecosystem, fully themeable at both developer and UI level, cross-browser compatible, and outputs fully responsive, email-client-safe HTML.
 
 ### Core Problem Solved
-> Backend provides an array of objects describing available variables → Operation team previously typed these manually → typos caused API errors → EmailCraft enforces schema-contract by making variables chip-based tokens picked from a UI menu only.
+> Backend provides an array of objects describing available variables → Operation team previously typed these manually → typos caused API errors → RETM Library enforces schema-contract by making variables chip-based tokens picked from a UI menu only.
 
 ---
 
@@ -74,7 +74,7 @@ EmailCraft is an embeddable React component library for visual email template ma
 
 ### 3.2 Read-Only Viewer Component
 ```jsx
-import { EmailTemplateViewer } from 'emailcraft'
+import { EmailTemplateViewer } from 'retm-library'
 
 <EmailTemplateViewer
   // Same storage source as the panel
@@ -113,7 +113,7 @@ import { EmailTemplateViewer } from 'emailcraft'
 
 ## 4. Variable Schema Format
 
-The backend passes an array of objects. EmailCraft supports nested grouping:
+The backend passes an array of objects. RETM Library supports nested grouping:
 
 ```js
 const variableSchema = [
@@ -229,7 +229,7 @@ customTokenFormat={{ open: "[[", close: "]]" }}
 
 ## 6. Template Panel UI — Dialog Structure
 
-The EmailCraft panel opens as a full-screen or large Dialog (configurable). It has two top-level modes:
+The RETM Library panel opens as a full-screen or large Dialog (configurable). It has two top-level modes:
 
 ### 6.1 Library View (Home)
 
@@ -702,7 +702,7 @@ This covers **~98%+ of global browser usage** as of 2025 and is the standard flo
 - **Clipboard API** (`navigator.clipboard.writeText`): Available on all targets over HTTPS; graceful fallback via `document.execCommand('copy')` for HTTP
 
 ### Email Output Compatibility (separate from library browser support)
-The HTML files exported by EmailCraft must render correctly in email clients, which is a separate and much harder compatibility challenge:
+The HTML files exported by RETM Library must render correctly in email clients, which is a separate and much harder compatibility challenge:
 
 | Client | Rendering Engine | Support Strategy |
 |---|---|---|
@@ -727,7 +727,7 @@ Strategies applied on HTML export:
 
 ## 19. Theming System
 
-EmailCraft uses a **three-tier theming model**: choose a built-in theme, override specific tokens, or go fully headless.
+RETM Library uses a **three-tier theming model**: choose a built-in theme, override specific tokens, or go fully headless.
 
 ### Tier 1 — Built-in Theme (default)
 ```jsx
@@ -736,7 +736,7 @@ EmailCraft uses a **three-tier theming model**: choose a built-in theme, overrid
 Ships with 6 pre-defined themes (see Section 20). The `default` theme is used if no `theme` prop is passed.
 
 ### Tier 2 — CSS Variable Overrides
-Any built-in theme can be customized by overriding specific design tokens. These map 1:1 to CSS custom properties scoped under `.emailcraft-root`:
+Any built-in theme can be customized by overriding specific design tokens. These map 1:1 to CSS custom properties scoped under `.retm-library-root`:
 
 ```jsx
 <EmailTemplatePanel
@@ -765,14 +765,14 @@ For Tailwind-based projects, a config preset synchronizes these tokens with Tail
 ```js
 // tailwind.config.js
 module.exports = {
-  presets: [require('emailcraft/tailwind-preset')],
-  // emailcraft tokens become available as Tailwind utilities
+  presets: [require('retm-library/tailwind-preset')],
+  // retm-library tokens become available as Tailwind utilities
   // e.g. bg-ec-primary, text-ec-secondary, rounded-ec
 }
 ```
 
 ### Tier 3 — Headless Mode
-Zero styles are shipped. The developer owns all CSS completely. EmailCraft only renders semantic HTML structure with stable `data-ec-*` attributes for targeting:
+Zero styles are shipped. The developer owns all CSS completely. RETM Library only renders semantic HTML structure with stable `data-ec-*` attributes for targeting:
 ```jsx
 <EmailTemplatePanel headless={true} />
 ```
@@ -787,7 +787,7 @@ Zero styles are shipped. The developer owns all CSS completely. EmailCraft only 
 [data-ec-block]          { /* each content block */ }
 [data-ec-block-selected] { /* currently selected block */ }
 ```
-Headless mode is for teams with a strict design system who want EmailCraft's logic with their own visual language entirely.
+Headless mode is for teams with a strict design system who want RETM Library's logic with their own visual language entirely.
 
 ---
 
@@ -870,7 +870,7 @@ A completely separate, lightweight component for internal staff (sales, support,
 ### Layout
 ```
 ┌─────────────────────────────────────────────────────────┐
-│  EmailCraft Templates          [🔍 Search]  [EN ▼] [🏷 Tags] │
+│  RETM Library Templates          [🔍 Search]  [EN ▼] [🏷 Tags] │
 ├──────────────┬──────────────────────────────────────────┤
 │  📁 Folders  │  [Welcome Email]  [Order Confirm]  [...]  │
 │  ─ All (8)   │                                          │
@@ -936,7 +936,7 @@ Template selected → opens split-view:
 
 ## 22. Responsive Email Design Rules
 
-All templates built in EmailCraft output fully responsive HTML following these enforced rules.
+All templates built in RETM Library output fully responsive HTML following these enforced rules.
 
 ### Canvas Constraints
 - Canvas max-width: **600px** — the universal email safe width
@@ -946,7 +946,7 @@ All templates built in EmailCraft output fully responsive HTML following these e
 ### Responsive Strategy: Hybrid (Fluid + Media Queries)
 Emails use a hybrid approach because different email clients support different responsive techniques:
 
-| Technique | Support | Usage in EmailCraft |
+| Technique | Support | Usage in RETM Library |
 |---|---|---|
 | Fluid width (% widths) | Universal | Default for single-column layouts |
 | CSS Media Queries | WebKit clients (Gmail, Apple Mail, iOS) | Used for stacking columns on mobile |
@@ -1067,4 +1067,4 @@ Minimum body font size is **14px** — the editor warns if a text block is set s
 
 ---
 
-*Last updated: 2026 | EmailCraft Spec v1.4*
+*Last updated: 2026 | RETM Library Spec v1.4*

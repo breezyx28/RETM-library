@@ -1,7 +1,7 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
 import App from './App'
-import 'emailcraft/styles.css'
+import 'retm-library/styles.css'
 import './playground.css'
 
 ReactDOM.createRoot(document.getElementById('root')!).render(

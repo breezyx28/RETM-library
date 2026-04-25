@@ -1,9 +1,9 @@
 /* -------------------------------------------------------------------------
  * Template editor (Phase 1 Slice B) — three-column layout, TipTap, DnD
- * Scoped under .emailcraft-root (library styles) or [data-ec-root] in headless
+ * Scoped under .retm-library-root (library styles) or [data-ec-root] in headless
  * ------------------------------------------------------------------------- */
 
-.emailcraft-root .ec-template-editor,
+.retm-library-root .ec-template-editor,
 [data-ec-root] .ec-template-editor {
   display: flex;
   flex-direction: column;
@@ -13,7 +13,7 @@
 }
 
 /* Toolbar */
-.emailcraft-root .ec-toolbar,
+.retm-library-root .ec-toolbar,
 [data-ec-root] .ec-toolbar {
   display: flex;
   align-items: center;
@@ -25,8 +25,8 @@
   flex-shrink: 0;
 }
 
-.emailcraft-root .ec-toolbar__left,
-.emailcraft-root .ec-toolbar__right,
+.retm-library-root .ec-toolbar__left,
+.retm-library-root .ec-toolbar__right,
 [data-ec-root] .ec-toolbar__left,
 [data-ec-root] .ec-toolbar__right {
   display: flex;
@@ -34,13 +34,13 @@
   gap: var(--ec-space-2, 8px);
 }
 
-.emailcraft-root .ec-toolbar__stub,
+.retm-library-root .ec-toolbar__stub,
 [data-ec-root] .ec-toolbar__stub {
   display: inline-flex;
 }
 
 /* Main grid: left / canvas / right */
-.emailcraft-root .ec-editor-grid,
+.retm-library-root .ec-editor-grid,
 [data-ec-root] .ec-editor-grid {
   display: grid;
   grid-template-columns: 220px minmax(0, 1fr) 260px;
@@ -50,7 +50,7 @@
 }
 
 @media (max-width: 1024px) {
-  .emailcraft-root .ec-editor-grid,
+  .retm-library-root .ec-editor-grid,
   [data-ec-root] .ec-editor-grid {
     grid-template-columns: 1fr;
     grid-template-rows: auto auto 1fr;
@@ -58,7 +58,7 @@
 }
 
 /* Sidebars */
-.emailcraft-root .ec-sidebar,
+.retm-library-root .ec-sidebar,
 [data-ec-root] .ec-sidebar {
   display: flex;
   flex-direction: column;
@@ -70,22 +70,22 @@
   overflow-y: auto;
 }
 
-.emailcraft-root .ec-sidebar--right,
+.retm-library-root .ec-sidebar--right,
 [data-ec-root] .ec-sidebar--right {
   border-right: none;
   border-left: 1px solid var(--ec-border, #e5e7eb);
 }
 
 @media (max-width: 1024px) {
-  .emailcraft-root .ec-sidebar--right,
+  .retm-library-root .ec-sidebar--right,
   [data-ec-root] .ec-sidebar--right {
     border-left: none;
     border-top: 1px solid var(--ec-border, #e5e7eb);
   }
 }
 
-.emailcraft-root [data-ec-h3],
-.emailcraft-root .ec-sidebar-section h3,
+.retm-library-root [data-ec-h3],
+.retm-library-root .ec-sidebar-section h3,
 [data-ec-root] [data-ec-h3],
 [data-ec-root] .ec-sidebar-section h3 {
   margin: 0 0 var(--ec-space-2, 8px);
@@ -97,14 +97,14 @@
 }
 
 /* Block palette (left) */
-.emailcraft-root .ec-palette,
+.retm-library-root .ec-palette,
 [data-ec-root] .ec-palette {
   display: flex;
   flex-direction: column;
   gap: var(--ec-space-2, 8px);
 }
 
-.emailcraft-root .ec-palette__btn,
+.retm-library-root .ec-palette__btn,
 [data-ec-root] .ec-palette__btn {
   display: flex;
   align-items: center;
@@ -121,25 +121,25 @@
   transition: background 0.12s ease, border-color 0.12s ease;
 }
 
-.emailcraft-root .ec-palette__btn:hover,
+.retm-library-root .ec-palette__btn:hover,
 [data-ec-root] .ec-palette__btn:hover {
   background: var(--ec-bg-tertiary, #f3f4f6);
   border-color: var(--ec-border-strong, #d1d5db);
 }
 
-.emailcraft-root .ec-hint,
+.retm-library-root .ec-hint,
 [data-ec-root] .ec-hint {
   font-size: var(--ec-text-xs, 11px);
   color: var(--ec-text-secondary, #6b7280);
   margin: 0 0 var(--ec-space-2, 8px);
 }
 
-.emailcraft-root .ec-var-group,
+.retm-library-root .ec-var-group,
 [data-ec-root] .ec-var-group {
   margin-bottom: var(--ec-space-3, 12px);
 }
 
-.emailcraft-root .ec-var-group__name,
+.retm-library-root .ec-var-group__name,
 [data-ec-root] .ec-var-group__name {
   font-size: var(--ec-text-xs, 11px);
   color: var(--ec-text-secondary, #6b7280);
@@ -147,7 +147,7 @@
   font-weight: 600;
 }
 
-.emailcraft-root .ec-var-pill,
+.retm-library-root .ec-var-pill,
 [data-ec-root] .ec-var-pill {
   display: block;
   width: 100%;
@@ -161,13 +161,13 @@
   cursor: pointer;
 }
 
-.emailcraft-root .ec-var-pill:hover,
+.retm-library-root .ec-var-pill:hover,
 [data-ec-root] .ec-var-pill:hover {
   background: var(--ec-primary-soft, rgba(37, 99, 235, 0.12));
 }
 
 /* Center column */
-.emailcraft-root .ec-editor-center,
+.retm-library-root .ec-editor-center,
 [data-ec-root] .ec-editor-center {
   display: flex;
   flex-direction: column;
@@ -177,7 +177,7 @@
   padding: var(--ec-space-3, 12px) var(--ec-space-4, 16px);
 }
 
-.emailcraft-root .ec-editor-faux-email,
+.retm-library-root .ec-editor-faux-email,
 [data-ec-root] .ec-editor-faux-email {
   text-align: center;
   font-size: var(--ec-text-xs, 11px);
@@ -185,7 +185,7 @@
   margin-bottom: 8px;
 }
 
-.emailcraft-root .ec-canvas-outer,
+.retm-library-root .ec-canvas-outer,
 [data-ec-root] .ec-canvas-outer {
   flex: 1 1 auto;
   min-height: 240px;
@@ -200,7 +200,7 @@
   overflow: hidden;
 }
 
-.emailcraft-root .ec-canvas-scroller,
+.retm-library-root .ec-canvas-scroller,
 [data-ec-root] .ec-canvas-scroller {
   padding: var(--ec-space-4, 16px);
   max-height: min(60vh, 700px);
@@ -208,7 +208,7 @@
 }
 
 /* Sortable block row */
-.emailcraft-root .ec-block,
+.retm-library-root .ec-block,
 [data-ec-root] .ec-block {
   display: flex;
   flex-direction: row;
@@ -220,19 +220,19 @@
   transition: border-color 0.12s ease, box-shadow 0.12s ease;
 }
 
-.emailcraft-root .ec-block--selected,
+.retm-library-root .ec-block--selected,
 [data-ec-root] .ec-block--selected {
   border-color: var(--ec-primary, #2563eb);
   box-shadow: 0 0 0 1px var(--ec-ring, rgba(37, 99, 235, 0.25));
 }
 
-.emailcraft-root .ec-block--dragging,
+.retm-library-root .ec-block--dragging,
 [data-ec-root] .ec-block--dragging {
   opacity: 0.7;
   z-index: 2;
 }
 
-.emailcraft-root .ec-block__handle,
+.retm-library-root .ec-block__handle,
 [data-ec-root] .ec-block__handle {
   flex: 0 0 auto;
   margin-top: 6px;
@@ -244,20 +244,20 @@
   cursor: grab;
 }
 
-.emailcraft-root .ec-block__handle:hover,
+.retm-library-root .ec-block__handle:hover,
 [data-ec-root] .ec-block__handle:hover {
   background: var(--ec-bg-tertiary, #f3f4f6);
   color: var(--ec-text, #111827);
 }
 
-.emailcraft-root .ec-block__inner,
+.retm-library-root .ec-block__inner,
 [data-ec-root] .ec-block__inner {
   flex: 1 1 auto;
   min-width: 0;
 }
 
 /* TipTap */
-.emailcraft-root .ec-block__text .tiptap,
+.retm-library-root .ec-block__text .tiptap,
 [data-ec-root] .ec-block__text .tiptap {
   min-height: 56px;
   font-size: var(--ec-text-md, 14px);
@@ -270,21 +270,21 @@
   outline: none;
 }
 
-.emailcraft-root .ec-block__text--active .tiptap,
-.emailcraft-root .ec-block__text .tiptap:focus-within,
+.retm-library-root .ec-block__text--active .tiptap,
+.retm-library-root .ec-block__text .tiptap:focus-within,
 [data-ec-root] .ec-block__text--active .tiptap,
 [data-ec-root] .ec-block__text .tiptap:focus-within {
   border-color: var(--ec-primary, #2563eb);
   box-shadow: 0 0 0 2px var(--ec-ring, rgba(37, 99, 235, 0.2));
 }
 
-.emailcraft-root .ec-block__text .tiptap p,
+.retm-library-root .ec-block__text .tiptap p,
 [data-ec-root] .ec-block__text .tiptap p {
   margin: 0.35em 0;
 }
 
 /* Variable chip in editor */
-.emailcraft-root .tiptap span[data-ec-var-chip],
+.retm-library-root .tiptap span[data-ec-var-chip],
 [data-ec-root] .tiptap span[data-ec-var-chip] {
   display: inline-flex;
   align-items: center;
@@ -304,7 +304,7 @@
   z-index: 1300;
 }
 
-.emailcraft-root [data-ec-at-menu],
+.retm-library-root [data-ec-at-menu],
 [data-ec-root] [data-ec-at-menu] {
   min-width: 200px;
   max-height: 220px;
@@ -316,7 +316,7 @@
   padding: 4px;
 }
 
-.emailcraft-root [data-ec-at-item],
+.retm-library-root [data-ec-at-item],
 [data-ec-root] [data-ec-at-item] {
   display: flex;
   flex-direction: column;
@@ -331,12 +331,12 @@
   color: var(--ec-text, #111827);
 }
 
-.emailcraft-root [data-ec-at-item]:hover,
+.retm-library-root [data-ec-at-item]:hover,
 [data-ec-root] [data-ec-at-item]:hover {
   background: var(--ec-bg-tertiary, #f3f4f6);
 }
 
-.emailcraft-root [data-ec-at-key],
+.retm-library-root [data-ec-at-key],
 [data-ec-root] [data-ec-at-key] {
   font-size: 11px;
   color: var(--ec-text-secondary, #6b7280);
@@ -344,7 +344,7 @@
 }
 
 /* Block visual previews (non-Tiptap) */
-.emailcraft-root .ec-block__ph,
+.retm-library-root .ec-block__ph,
 [data-ec-root] .ec-block__ph {
   min-height: 100px;
   display: flex;
@@ -359,8 +359,8 @@
 }
 
 /* Right panel fields */
-.emailcraft-root .ec-rfield,
-.emailcraft-root .ec-rfield-stack label,
+.retm-library-root .ec-rfield,
+.retm-library-root .ec-rfield-stack label,
 [data-ec-root] .ec-rfield,
 [data-ec-root] .ec-rfield-stack label {
   display: flex;
@@ -372,8 +372,8 @@
   margin-bottom: 10px;
 }
 
-.emailcraft-root .ec-rfield input,
-.emailcraft-root .ec-rfield-stack input,
+.retm-library-root .ec-rfield input,
+.retm-library-root .ec-rfield-stack input,
 [data-ec-root] .ec-rfield input,
 [data-ec-root] .ec-rfield-stack input {
   font: inherit;
@@ -383,20 +383,20 @@
   background: var(--ec-bg, #fff);
 }
 
-.emailcraft-root .ec-muted,
+.retm-library-root .ec-muted,
 [data-ec-root] .ec-muted {
   color: var(--ec-text-secondary, #6b7280);
   font-size: var(--ec-text-sm, 13px);
 }
 
-.emailcraft-root .ec-rfield-inline,
+.retm-library-root .ec-rfield-inline,
 [data-ec-root] .ec-rfield-inline {
   display: flex;
   gap: 8px;
   flex-wrap: wrap;
 }
 
-.emailcraft-root .ec-attachment-row,
+.retm-library-root .ec-attachment-row,
 [data-ec-root] .ec-attachment-row {
   border: 1px solid var(--ec-border, #e5e7eb);
   border-radius: 8px;
@@ -405,14 +405,14 @@
   background: var(--ec-bg, #fff);
 }
 
-.emailcraft-root .ec-history-list,
+.retm-library-root .ec-history-list,
 [data-ec-root] .ec-history-list {
   display: flex;
   flex-direction: column;
   gap: 8px;
 }
 
-.emailcraft-root .ec-history-item,
+.retm-library-root .ec-history-item,
 [data-ec-root] .ec-history-item {
   border: 1px solid var(--ec-border, #e5e7eb);
   border-radius: 8px;
@@ -424,17 +424,17 @@
   gap: 8px;
 }
 
-.emailcraft-root .ec-history-item[data-ec-kind='autosave'],
+.retm-library-root .ec-history-item[data-ec-kind='autosave'],
 [data-ec-root] .ec-history-item[data-ec-kind='autosave'] {
   opacity: 0.72;
 }
 
-.emailcraft-root .ec-history-item[data-ec-active],
+.retm-library-root .ec-history-item[data-ec-active],
 [data-ec-root] .ec-history-item[data-ec-active] {
   border-color: var(--ec-primary, #2563eb);
 }
 
-.emailcraft-root .ec-history-item__meta,
+.retm-library-root .ec-history-item__meta,
 [data-ec-root] .ec-history-item__meta {
   display: flex;
   flex-direction: column;
@@ -442,7 +442,7 @@
   font-size: 12px;
 }
 
-.emailcraft-root .ec-block__logic,
+.retm-library-root .ec-block__logic,
 [data-ec-root] .ec-block__logic {
   border: 1px dashed var(--ec-border-strong, #d1d5db);
   border-radius: 8px;
@@ -450,7 +450,7 @@
   padding: 10px 12px;
 }
 
-.emailcraft-root .ec-block__logic-head,
+.retm-library-root .ec-block__logic-head,
 [data-ec-root] .ec-block__logic-head {
   font-size: 12px;
   font-weight: 700;
@@ -460,20 +460,20 @@
   margin-bottom: 6px;
 }
 
-.emailcraft-root .ec-block__logic-row,
+.retm-library-root .ec-block__logic-row,
 [data-ec-root] .ec-block__logic-row {
   font-size: 13px;
   color: var(--ec-text, #111827);
   margin: 2px 0;
 }
 
-.emailcraft-root .ec-editor-empty,
+.retm-library-root .ec-editor-empty,
 [data-ec-root] .ec-editor-empty {
   padding: 24px;
   text-align: center;
 }
 
-.emailcraft-root .ec-preview-modal,
+.retm-library-root .ec-preview-modal,
 [data-ec-root] .ec-preview-modal {
   position: fixed;
   inset: 20px;
@@ -487,7 +487,7 @@
   box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
 }
 
-.emailcraft-root .ec-preview-modal__toolbar,
+.retm-library-root .ec-preview-modal__toolbar,
 [data-ec-root] .ec-preview-modal__toolbar {
   display: flex;
   align-items: center;
@@ -496,7 +496,7 @@
   border-bottom: 1px solid var(--ec-border, #e5e7eb);
 }
 
-.emailcraft-root .ec-preview,
+.retm-library-root .ec-preview,
 [data-ec-root] .ec-preview {
   flex: 1 1 auto;
   min-height: 0;
@@ -507,7 +507,7 @@
   padding: 16px;
 }
 
-.emailcraft-root .ec-preview__frame,
+.retm-library-root .ec-preview__frame,
 [data-ec-root] .ec-preview__frame {
   height: 100%;
   min-height: 520px;
@@ -516,7 +516,7 @@
   background: #fff;
 }
 
-.emailcraft-root .ec-validation-body,
+.retm-library-root .ec-validation-body,
 [data-ec-root] .ec-validation-body {
   padding: 16px;
   display: flex;
@@ -524,7 +524,7 @@
   gap: 10px;
 }
 
-.emailcraft-root .ec-preview-plain,
+.retm-library-root .ec-preview-plain,
 [data-ec-root] .ec-preview-plain {
   flex: 1 1 auto;
   margin: 0;
@@ -536,7 +536,7 @@
   font-family: var(--ec-font-mono, monospace);
 }
 
-.emailcraft-root .ec-diff-pane,
+.retm-library-root .ec-diff-pane,
 [data-ec-root] .ec-diff-pane {
   flex: 1 1 0;
   margin: 0;

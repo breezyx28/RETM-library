@@ -3,7 +3,7 @@ import react from '@vitejs/plugin-react'
 import { resolve } from 'node:path'
 
 /**
- * Alias `emailcraft` and `emailcraft/styles.css` to the library source so
+ * Alias `retm-library` and `retm-library/styles.css` to the library source so
  * edits hot-reload without a rebuild step. Regex aliases are used so the
  * bare-specifier and the subpath don't collide via prefix matching.
  */
@@ -12,11 +12,11 @@ export default defineConfig({
   resolve: {
     alias: [
       {
-        find: /^emailcraft\/styles\.css$/,
+        find: /^retm-library\/styles\.css$/,
         replacement: resolve(__dirname, '../src/styles/index.css'),
       },
       {
-        find: /^emailcraft$/,
+        find: /^retm-library$/,
         replacement: resolve(__dirname, '../src/index.ts'),
       },
     ],

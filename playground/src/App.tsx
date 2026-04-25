@@ -4,10 +4,10 @@ import {
   EmailTemplateViewer,
   type ThemeName,
   type VariableSchema,
-} from 'emailcraft'
+} from 'retm-library'
 
 /**
- * Sample variable schema drawn from EmailCraft_Spec.md §4.
+ * Sample variable schema drawn from retm-library-spec.md §4.
  */
 const variableSchema: VariableSchema = [
   {
@@ -50,7 +50,7 @@ export default function App() {
   return (
     <div className="pg-shell" data-pg-theme={theme}>
       <header className="pg-header">
-        <h1>EmailCraft Playground</h1>
+        <h1>RETM Library Playground</h1>
         <p>
           Phase 1 Slice A. Library view, storage round-trip, themes, Dialog vs
           inline mounting. The full visual editor ships in Slice B.
@@ -109,7 +109,7 @@ export default function App() {
           variableSchema={variableSchema}
           tokenFormat="handlebars"
           storageMode="local"
-          storageKey="emailcraft:playground:dialog"
+          storageKey="retm-library:playground:dialog"
           supportedLanguages={['en', 'ar']}
           defaultLanguage="en"
           rtlLanguages={['ar', 'he', 'fa']}
@@ -148,7 +148,7 @@ export default function App() {
           variableSchema={variableSchema}
           tokenFormat="handlebars"
           storageMode="local"
-          storageKey="emailcraft:playground:inline"
+          storageKey="retm-library:playground:inline"
           defaultLanguage="en"
           theme={theme}
           headless={headless}
@@ -167,7 +167,7 @@ export default function App() {
         </p>
         <EmailTemplateViewer
           storageMode="local"
-          storageKey="emailcraft:playground:inline"
+          storageKey="retm-library:playground:inline"
           defaultView="grid"
           theme={theme}
           headless={headless}

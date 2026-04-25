@@ -18,7 +18,7 @@ export interface ThemeRootProps {
 
 /**
  * Applies theme tokens to its subtree. All theme variables are scoped under
- * `.emailcraft-root[data-ec-theme=...]` in `panel.css`.
+ * `.retm-library-root[data-ec-theme=...]` in `panel.css`.
  *
  * In headless mode (`headless={true}`) neither class nor `data-ec-theme` is
  * applied, so none of the bundled styles match. Consumers then style
@@ -62,7 +62,7 @@ export const ThemeRoot = forwardRef<HTMLDivElement, ThemeRootProps>(
         data-ec-root=""
         data-ec-theme={theme}
         data-ec-scope={dataScope}
-        className={cn('emailcraft-root', className)}
+        className={cn('retm-library-root', className)}
         style={mergedStyle}
       >
         {children}

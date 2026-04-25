@@ -9,7 +9,7 @@ import { StorageAdapterError, type StorageAdapter } from './types'
  * The key is versioned (`:v1`) so a future schema migration can live alongside
  * without overwriting existing data.
  */
-const DEFAULT_KEY = 'emailcraft:templates:v1'
+const DEFAULT_KEY = 'retm-library:templates:v1'
 
 interface LocalAdapterOptions {
   storageKey?: string

@@ -1,7 +1,7 @@
 /**
- * EmailCraft — Visual Email Template Library.
+ * RETM Library — visual email template components for React.
  *
- * Public API barrel. See `EmailCraft_Spec.md` for the full product spec.
+ * Public API barrel. See `retm-library-spec.md` for the full product spec.
  */
 
 export { EmailTemplatePanel } from './components/EmailTemplatePanel'
