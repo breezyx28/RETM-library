@@ -7,7 +7,7 @@ Ships two components:
 - **`<EmailTemplatePanel>`** — full authoring surface for operation/admin teams: library view, visual editor, variable chips, block DnD, HTML export.
 - **`<EmailTemplateViewer>`** — read-only browser for internal staff (sales, support) to browse published templates with a split preview/code view.
 
-> Status: scaffolding complete. See [retm-library-spec.md](./retm-library-spec.md) for the full product spec and [Development phases](#development-phases) for the roadmap.
+> Status: scaffolding complete. See [retm-library-spec.md](./retm-library-spec.md) for the full product spec.
 
 ---
 
@@ -162,51 +162,6 @@ retm-library/
   playground/                      local Vite dev app
   retm-library-spec.md             full product spec
 ```
-
----
-
-## Development phases
-
-The library is built in three phases, locked to [retm-library-spec.md §23](./retm-library-spec.md).
-
-### Phase 1 — Core MVP
-
-- `<EmailTemplatePanel>` Dialog shell + library view
-- TipTap editor + variable chip node
-- Variable schema ingestion + side panel
-- Blocks: Text, Image (URL), Button, Divider, Spacer
-- Token format system (`handlebars` + `custom`)
-- HTML export with `juice` (production + plain modes)
-- `localStorage` persistence
-- Desktop/Mobile canvas preview
-- Default + Dark themes
-- CSS variable override system
-
-### Phase 2 — Full Feature
-
-- All remaining blocks + 2/3-column layouts
-- Conditional + Loop blocks
-- Attachment / file link system with URL auto-detection
-- Backend + hybrid storage modes
-- Validation system + pre-export modal
-- SEO / metadata panel
-- Persistent version history (versions = undo/redo)
-- Multi-language per template + RTL canvas flip
-- Folders + tag filter
-- `<EmailTemplateViewer>` split preview/code view (Shiki)
-- All 6 themes + Tailwind preset
-
-### Phase 3 — Polish & Advanced
-
-- Rendered-HTML thumbnails
-- Dark mode + plain-text previews
-- Test send callback
-- Role-based permissions UI
-- Saved Blocks Library (personal + shared)
-- Headless mode + full `data-ec-*` coverage
-- Approval workflow activation
-- Version diff view
-- WCAG contrast checker
 
 ---
 
