@@ -1,9 +1,16 @@
-import type { Template, ThemeName, ThemeOverride } from '../../types'
+import type {
+  CustomTokenFormat,
+  Template,
+  ThemeName,
+  ThemeOverride,
+  TokenFormat,
+  VariableSchema,
+} from '../../types'
 import type { StorageMode } from '../EmailTemplatePanel/EmailTemplatePanel.types'
 
 export type ViewerDefaultView = 'grid' | 'list'
 
-export type ViewerDefaultTab = 'preview' | 'code'
+export type ViewerDefaultTab = 'preview' | 'code' | 'plain'
 
 export interface ViewerCodeViewConfig {
   enabled?: boolean
@@ -31,6 +38,19 @@ export interface EmailTemplateViewerProps {
   searchable?: boolean
   filterByTags?: boolean
   filterByLanguage?: boolean
+  /** When true, lists published and draft templates (default: published only). */
+  includeNonPublished?: boolean
+
+  /**
+   * When stored `html` is empty but `editorJson` exists, derive preview/code/plain
+   * by exporting with this context (e.g. playground passes panel schema).
+   */
+  exportContext?: {
+    variableSchema: VariableSchema
+    tokenFormat?: TokenFormat
+    customTokenFormat?: CustomTokenFormat
+    sampleData?: Record<string, unknown>
+  }
 
   // Code view
   allowCopy?: boolean

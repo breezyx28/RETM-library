@@ -96,8 +96,8 @@ export function LibraryView() {
         <NewTemplateButton onCreate={handleCreate} disabled={loading || userRole === 'viewer'} />
       </header>
       {organizationMode !== 'folders' ? (
-        <label data-ec-field="">
-          <span>Tag filter</span>
+        <label data-ec-field="" data-ec-library-filter="">
+          <span data-ec-label="">Tag filter</span>
           <input
             data-ec-input=""
             value={tagFilter}
@@ -156,7 +156,7 @@ export function LibraryView() {
                 }}
               />
               {publishMode === 'approval' && userRole !== 'viewer' ? (
-                <div className="ec-rfield-inline" style={{ marginTop: 8 }}>
+                <div className="ec-rfield-inline" data-ec-library-actions="">
                   {template.status === 'draft' ? (
                     <button
                       type="button"

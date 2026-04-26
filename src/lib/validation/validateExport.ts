@@ -1,6 +1,25 @@
 import type { ExportInput } from '../export'
+import type { JSONContent } from '@tiptap/core'
 import type { EmailBlock } from '../types/editorDocument'
 import type { ValidationIssue, ValidationResult } from './types'
+
+/**
+ * Split export validation issues for UX: allow confirming export when the only
+ * errors are `required_variable_missing` (no other error-level blockers).
+ */
+export function partitionExportIssues(issues: ValidationIssue[]): {
+  /** Error-level issues other than missing required variables. */
+  hardErrors: ValidationIssue[]
+  /** Missing required schema variables (error severity). */
+  variableMissingErrors: ValidationIssue[]
+  warnings: ValidationIssue[]
+} {
+  const errors = issues.filter((i) => i.severity === 'error')
+  const variableMissingErrors = errors.filter((i) => i.code === 'required_variable_missing')
+  const hardErrors = errors.filter((i) => i.code !== 'required_variable_missing')
+  const warnings = issues.filter((i) => i.severity === 'warning')
+  return { hardErrors, variableMissingErrors, warnings }
+}
 
 function issue(
   id: string,
@@ -35,6 +54,9 @@ function walkBlocks(blocks: EmailBlock[], out: ValidationIssue[]) {
   }
 
   for (const block of blocks) {
+    if (block.type === 'text') {
+      walkDocNodes(block.props.doc, out, toRgb, contrast)
+    }
     if (block.type === 'image') {
       if (!block.props.url.trim()) {
         out.push(issue(block.id, 'warning', 'image_url_missing', 'Image block has no URL.'))
@@ -71,6 +93,87 @@ function walkBlocks(blocks: EmailBlock[], out: ValidationIssue[]) {
       walkBlocks(block.props.bodyBlocks, out)
       walkBlocks(block.props.emptyBlocks, out)
     }
+  }
+}
+
+function walkDocNodes(
+  node: JSONContent | undefined,
+  out: ValidationIssue[],
+  toRgb: (hex: string) => [number, number, number] | null,
+  contrast: (a: [number, number, number], b: [number, number, number]) => number,
+) {
+  if (!node) return
+  if (node.type === 'ecPlugin') {
+    const attrs = (node.attrs ?? {}) as Record<string, unknown>
+    const pluginId = String(attrs.id ?? 'inline_plugin')
+    const kind = String(attrs.kind ?? '')
+    if (kind === 'image') {
+      const url = String(attrs.url ?? '').trim()
+      const alt = String(attrs.alt ?? '').trim()
+      if (!url) {
+        out.push(issue(pluginId, 'warning', 'image_url_missing', 'Inline image block has no URL.'))
+      }
+      if (!alt) {
+        out.push(issue(pluginId, 'warning', 'image_alt_missing', 'Inline image block should include alt text.'))
+      }
+    }
+    if (kind === 'button') {
+      const label = String(attrs.buttonLabel ?? '').trim()
+      const href = String(attrs.buttonHref ?? '').trim()
+      if (!label) {
+        out.push(issue(pluginId, 'error', 'button_label_missing', 'Inline button label is required.'))
+      }
+      if (!href) {
+        out.push(issue(pluginId, 'error', 'button_href_missing', 'Inline button URL is required.'))
+      }
+      const fg = toRgb(String(attrs.textColor ?? '#ffffff'))
+      const bg = toRgb(String(attrs.backgroundColor ?? '#2563eb'))
+      if (fg && bg && contrast(fg, bg) < 4.5) {
+        out.push(
+          issue(
+            pluginId,
+            'warning',
+            'button_low_contrast',
+            'Inline button text/background contrast appears below WCAG AA (4.5:1).',
+          ),
+        )
+      }
+    }
+  }
+  if (node.type === 'ecVariable') {
+    const attrs = (node.attrs ?? {}) as Record<string, unknown>
+    const varId = String(attrs.key ?? 'inline_var')
+    const renderAs = String(attrs.renderAs ?? 'text')
+    if (renderAs === 'image') {
+      const width = Number(attrs.imageWidth ?? 240)
+      const height = Number(attrs.imageHeight ?? 120)
+      if (!Number.isFinite(width) || width <= 0 || !Number.isFinite(height) || height <= 0) {
+        out.push(
+          issue(
+            varId,
+            'warning',
+            'variable_image_invalid_size',
+            'Image variable should have positive width and height.',
+          ),
+        )
+      }
+    }
+    if (renderAs === 'list') {
+      const listStyle = String(attrs.listStyle ?? 'unordered')
+      if (listStyle !== 'ordered' && listStyle !== 'unordered') {
+        out.push(
+          issue(
+            varId,
+            'warning',
+            'variable_list_invalid_style',
+            'List variable should use ordered or unordered style.',
+          ),
+        )
+      }
+    }
+  }
+  for (const child of node.content ?? []) {
+    walkDocNodes(child, out, toRgb, contrast)
   }
 }
 

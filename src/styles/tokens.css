@@ -7,74 +7,77 @@
 
 .retm-library-root {
   /* Color — base palette */
-  --ec-primary: #2563eb;
-  --ec-primary-hover: #1d4ed8;
-  --ec-primary-soft: rgba(37, 99, 235, 0.12);
-  --ec-accent: #f59e0b;
+  --ec-primary: #000000;
+  --ec-primary-hover: #1f1f1f;
+  --ec-primary-soft: rgba(0, 0, 0, 0.08);
+  --ec-accent: #000000;
 
   --ec-bg: #ffffff;
-  --ec-bg-secondary: #f9fafb;
-  --ec-bg-tertiary: #f3f4f6;
-  --ec-bg-overlay: rgba(17, 24, 39, 0.48);
+  --ec-bg-secondary: #f7f7f7;
+  --ec-bg-tertiary: #efefef;
+  --ec-bg-overlay: rgba(0, 0, 0, 0.5);
 
-  --ec-border: #e5e7eb;
-  --ec-border-strong: #d1d5db;
-  --ec-ring: rgba(37, 99, 235, 0.35);
+  --ec-border: #dddddd;
+  --ec-border-strong: #bdbdbd;
+  --ec-ring: rgba(0, 0, 0, 0.18);
+  --ec-focus-outline: 2px dashed #000000;
+  --ec-focus-offset: 2px;
 
-  --ec-text: #111827;
-  --ec-text-secondary: #6b7280;
-  --ec-text-muted: #9ca3af;
+  --ec-text: #111111;
+  --ec-text-secondary: #4a4a4a;
+  --ec-text-muted: #666666;
   --ec-text-inverse: #ffffff;
 
-  --ec-danger: #dc2626;
-  --ec-danger-hover: #b91c1c;
-  --ec-danger-soft: rgba(220, 38, 38, 0.1);
+  --ec-danger: #a81717;
+  --ec-danger-hover: #7e1010;
+  --ec-danger-soft: rgba(168, 23, 23, 0.1);
 
-  --ec-success: #16a34a;
-  --ec-warning: #d97706;
-  --ec-info: #2563eb;
+  --ec-success: #1f7a38;
+  --ec-warning: #7a550d;
+  --ec-info: #222222;
 
   /* Typography */
   --ec-font:
-    'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue',
-    Arial, sans-serif;
+    'Segoe UI Variable', 'Segoe UI', system-ui, -apple-system, Roboto,
+    'Helvetica Neue', Arial, sans-serif;
   --ec-font-mono:
     'Fira Code', ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
 
-  --ec-text-xs: 11px;
-  --ec-text-sm: 13px;
+  --ec-text-xs: 12px;
+  --ec-text-sm: 14px;
   --ec-text-md: 14px;
-  --ec-text-lg: 16px;
-  --ec-text-xl: 18px;
-  --ec-text-2xl: 22px;
-  --ec-text-3xl: 28px;
+  --ec-text-lg: 17px;
+  --ec-text-xl: 20px;
+  --ec-text-2xl: 26px;
+  --ec-text-3xl: 32px;
 
   /* Spacing scale (4-based) */
   --ec-space-1: 4px;
   --ec-space-2: 8px;
   --ec-space-3: 12px;
   --ec-space-4: 16px;
-  --ec-space-5: 20px;
+  --ec-space-5: 22px;
   --ec-space-6: 24px;
   --ec-space-8: 32px;
   --ec-space-10: 40px;
   --ec-space-12: 48px;
 
   /* Radii */
-  --ec-radius-sm: 4px;
-  --ec-radius: 8px;
-  --ec-radius-lg: 12px;
-  --ec-radius-xl: 16px;
+  --ec-radius-sm: 6px;
+  --ec-radius: 10px;
+  --ec-radius-lg: 14px;
+  --ec-radius-xl: 18px;
+  --ec-radius-pill: 999px;
   --ec-radius-full: 999px;
 
   /* Shadows */
-  --ec-shadow-sm: 0 1px 2px rgba(17, 24, 39, 0.06);
-  --ec-shadow: 0 2px 8px rgba(17, 24, 39, 0.08);
+  --ec-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+  --ec-shadow: 0 8px 22px -16px rgba(0, 0, 0, 0.24);
   --ec-shadow-md:
-    0 4px 12px rgba(17, 24, 39, 0.08), 0 1px 3px rgba(17, 24, 39, 0.06);
+    0 14px 30px -18px rgba(0, 0, 0, 0.3), 0 1px 2px rgba(0, 0, 0, 0.05);
   --ec-shadow-lg:
-    0 24px 48px -12px rgba(17, 24, 39, 0.24),
-    0 8px 16px -4px rgba(17, 24, 39, 0.08);
+    0 34px 64px -24px rgba(0, 0, 0, 0.38),
+    0 10px 20px -8px rgba(0, 0, 0, 0.16);
 
   /* Motion */
   --ec-duration-fast: 120ms;
@@ -89,8 +92,101 @@
   color: var(--ec-text);
   font-family: var(--ec-font);
   font-size: var(--ec-text-md);
-  line-height: 1.5;
+  line-height: 1.45;
+  font-feature-settings: 'kern' 1;
   -webkit-font-smoothing: antialiased;
+}
+
+/*
+ * Baseline tokens for Radix-portaled content (AlertDialog, Dialog, DropdownMenu).
+ * Portaled nodes mount on document.body and escape `.retm-library-root`, so the
+ * tokens defined above don't reach them. We re-declare the default-theme set on
+ * the portal-targeting `data-ec-*` attributes via `:where()` (specificity 0) so
+ * any explicit theme override on `.retm-library-root[data-ec-theme=...]` still
+ * wins when the portal is mounted inside the root.
+ */
+:where(
+  [data-ec-overlay],
+  [data-ec-shell],
+  [data-ec-menu],
+  [data-ec-alertdialog],
+  [data-ec-dialog]
+) {
+  --ec-primary: #000000;
+  --ec-primary-hover: #1f1f1f;
+  --ec-primary-soft: rgba(0, 0, 0, 0.08);
+  --ec-accent: #000000;
+
+  --ec-bg: #ffffff;
+  --ec-bg-secondary: #f7f7f7;
+  --ec-bg-tertiary: #efefef;
+  --ec-bg-overlay: rgba(0, 0, 0, 0.5);
+
+  --ec-border: #dddddd;
+  --ec-border-strong: #bdbdbd;
+  --ec-ring: rgba(0, 0, 0, 0.18);
+  --ec-focus-outline: 2px dashed #000000;
+  --ec-focus-offset: 2px;
+
+  --ec-text: #111111;
+  --ec-text-secondary: #4a4a4a;
+  --ec-text-muted: #666666;
+  --ec-text-inverse: #ffffff;
+
+  --ec-danger: #a81717;
+  --ec-danger-hover: #7e1010;
+  --ec-danger-soft: rgba(168, 23, 23, 0.1);
+
+  --ec-success: #1f7a38;
+  --ec-warning: #7a550d;
+  --ec-info: #222222;
+
+  --ec-font:
+    'Segoe UI Variable', 'Segoe UI', system-ui, -apple-system, Roboto,
+    'Helvetica Neue', Arial, sans-serif;
+  --ec-font-mono:
+    'Fira Code', ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+
+  --ec-text-xs: 12px;
+  --ec-text-sm: 14px;
+  --ec-text-md: 14px;
+  --ec-text-lg: 17px;
+  --ec-text-xl: 20px;
+  --ec-text-2xl: 26px;
+  --ec-text-3xl: 32px;
+
+  --ec-space-1: 4px;
+  --ec-space-2: 8px;
+  --ec-space-3: 12px;
+  --ec-space-4: 16px;
+  --ec-space-5: 22px;
+  --ec-space-6: 24px;
+  --ec-space-8: 32px;
+  --ec-space-10: 40px;
+  --ec-space-12: 48px;
+
+  --ec-radius-sm: 6px;
+  --ec-radius: 10px;
+  --ec-radius-lg: 14px;
+  --ec-radius-xl: 18px;
+  --ec-radius-pill: 999px;
+  --ec-radius-full: 999px;
+
+  --ec-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+  --ec-shadow: 0 8px 22px -16px rgba(0, 0, 0, 0.24);
+  --ec-shadow-md:
+    0 14px 30px -18px rgba(0, 0, 0, 0.3), 0 1px 2px rgba(0, 0, 0, 0.05);
+  --ec-shadow-lg:
+    0 34px 64px -24px rgba(0, 0, 0, 0.38),
+    0 10px 20px -8px rgba(0, 0, 0, 0.16);
+
+  --ec-duration-fast: 120ms;
+  --ec-duration: 180ms;
+  --ec-ease: cubic-bezier(0.2, 0.8, 0.2, 1);
+
+  --ec-z-dialog: 1000;
+  --ec-z-popover: 1100;
+  --ec-z-tooltip: 1200;
 }
 
 .retm-library-root[data-ec-theme='dark'] {

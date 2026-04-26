@@ -41,6 +41,7 @@ describe('Editor panel integration flows', () => {
         ]}
         onInsertSavedBlock={onInsertSavedBlock}
         onDeleteSavedBlock={onDeleteSavedBlock}
+        onPickPreset={vi.fn()}
       />,
     )
     fireEvent.click(screen.getByRole('button', { name: 'Saved' }))
@@ -92,10 +93,9 @@ describe('Editor panel integration flows', () => {
         readOnly={false}
       />,
     )
-    const selects = screen.getAllByRole('combobox')
-    expect(selects.length).toBeGreaterThanOrEqual(3)
-    fireEvent.change(selects[1]!, { target: { value: 'v1' } })
-    fireEvent.change(selects[2]!, { target: { value: 'v2' } })
+    fireEvent.click(screen.getByRole('button', { name: 'History' }))
+    fireEvent.change(screen.getByLabelText('Compare left'), { target: { value: 'v1' } })
+    fireEvent.change(screen.getByLabelText('Compare right'), { target: { value: 'v2' } })
     expect(onCompareChange).toHaveBeenCalled()
   })
 

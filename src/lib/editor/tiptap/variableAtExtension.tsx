@@ -55,6 +55,7 @@ export function createVariableAtExtension(getItems: () => FlatVariable[]) {
                   key: props.key,
                   label: props.label,
                   color: props.color ?? null,
+                  renderAs: 'text',
                 },
               })
               .run()

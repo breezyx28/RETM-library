@@ -39,6 +39,10 @@ export interface PanelState {
    * from the side panel.
    */
   activeTextBlockId: string | null
+  selectedInlinePlugin: {
+    pluginId: string
+    pluginKind: 'image' | 'button' | 'divider' | 'spacer'
+  } | null
   versions: TemplateVersion[]
   versionCursor: number
   savedBlocks: SavedBlock[]
@@ -55,6 +59,12 @@ export interface PanelState {
 
   setSelectedBlockId: (id: string | null) => void
   setActiveTextBlockId: (id: string | null) => void
+  setSelectedInlinePlugin: (
+    plugin: {
+      pluginId: string
+      pluginKind: 'image' | 'button' | 'divider' | 'spacer'
+    } | null,
+  ) => void
 
   setRenameTarget: (id: string | null) => void
   setDeleteTarget: (id: string | null) => void
@@ -215,6 +225,7 @@ export function createPanelStore(args: CreatePanelStoreArgs): PanelStoreApi {
       defaultLanguage,
       selectedBlockId: null,
       activeTextBlockId: null,
+      selectedInlinePlugin: null,
       versions: [],
       versionCursor: -1,
       savedBlocks: [],
@@ -285,6 +296,7 @@ export function createPanelStore(args: CreatePanelStoreArgs): PanelStoreApi {
           activeTemplateId: id,
           selectedBlockId: null,
           activeTextBlockId: null,
+          selectedInlinePlugin: null,
           versions: [],
           versionCursor: -1,
         }),
@@ -294,12 +306,14 @@ export function createPanelStore(args: CreatePanelStoreArgs): PanelStoreApi {
           activeTemplateId: null,
           selectedBlockId: null,
           activeTextBlockId: null,
+          selectedInlinePlugin: null,
           versions: [],
           versionCursor: -1,
         }),
 
       setSelectedBlockId: (id) => set({ selectedBlockId: id }),
       setActiveTextBlockId: (id) => set({ activeTextBlockId: id }),
+      setSelectedInlinePlugin: (plugin) => set({ selectedInlinePlugin: plugin }),
 
       setRenameTarget: (id) => set({ renameTargetId: id }),
       setDeleteTarget: (id) => set({ deleteTargetId: id }),

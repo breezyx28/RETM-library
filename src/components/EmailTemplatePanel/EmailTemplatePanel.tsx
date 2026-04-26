@@ -119,6 +119,9 @@ export function EmailTemplatePanel(props: EmailTemplatePanelProps) {
           >
             <PanelShell
               asDialog={asDialog}
+              headless={headless}
+              theme={theme}
+              themeOverride={themeOverride}
               open={open}
               defaultOpen={defaultOpen}
               onOpenChange={onOpenChange}

@@ -16,7 +16,16 @@ export function ButtonBlockView({
     <div
       className={cn('ec-block__btnwrap', isSelected && 'ec-block__text--active')}
       data-ec-canvas=""
+      role="button"
+      tabIndex={0}
+      aria-pressed={isSelected}
       onClick={() => setSelected(blockId)}
+      onKeyDown={(e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault()
+          setSelected(blockId)
+        }
+      }}
     >
       <a
         href={props.href || '#'}

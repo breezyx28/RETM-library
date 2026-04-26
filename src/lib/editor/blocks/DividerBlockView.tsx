@@ -16,8 +16,16 @@ export function DividerBlockView({
     <div
       className={cn('ec-block__div', isSelected && 'ec-block__text--active')}
       data-ec-canvas=""
+      tabIndex={0}
+      aria-pressed={isSelected}
       onClick={() => setSelected(blockId)}
-      role="separator"
+      onKeyDown={(e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault()
+          setSelected(blockId)
+        }
+      }}
+      role="button"
     >
       <hr
         style={{

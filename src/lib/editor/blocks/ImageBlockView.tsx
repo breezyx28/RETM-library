@@ -17,8 +17,17 @@ export function ImageBlockView({
     <div
       className={cn('ec-block__image', isSelected && 'ec-block__text--active')}
       data-ec-canvas=""
+      role="button"
+      tabIndex={0}
+      aria-pressed={isSelected}
       onClick={() => {
         setSelected(blockId)
+      }}
+      onKeyDown={(e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault()
+          setSelected(blockId)
+        }
       }}
     >
       {props.url ? (

@@ -1,14 +1,9 @@
-import { ArrowDown, ArrowUp, Plus, Trash2 } from 'lucide-react'
-import { usePanelStore } from '../store'
-import type { EmailBlock, EditorDocumentV1 } from '../types/editorDocument'
-import { defaultAttachment, newAttachmentId, newBlockId } from '../types/editorDocument'
+import { ArrowDown, ArrowUp, FileText, History, Paperclip, Plus, Trash2 } from 'lucide-react'
+import { useState } from 'react'
+import type { EditorDocumentV1 } from '../types/editorDocument'
+import { defaultAttachment, newAttachmentId } from '../types/editorDocument'
 import type { TemplateVersion } from '../../types'
 import { formatRelative } from '../utils/date'
-
-const emptyTiptap = {
-  type: 'doc' as const,
-  content: [{ type: 'paragraph' as const }],
-}
 
 export function EditorRightPanel({
   work,
@@ -64,33 +59,11 @@ export function EditorRightPanel({
   diffRightHtml?: string
   readOnly: boolean
 }) {
-  const selectedId = usePanelStore((s) => s.selectedBlockId)
-  const setSelected = usePanelStore((s) => s.setSelectedBlockId)
-
-  const block =
-    (selectedId ? work.blocks.find((b) => b.id === selectedId) : null) ??
-    work.blocks[0] ??
-    null
-  const targetId = selectedId ?? work.blocks[0]?.id ?? null
-
-  const setBlocks = (blocks: typeof work.blocks) =>
-    onChange({ ...work, version: 1, blocks })
+  const [activeTab, setActiveTab] = useState<'metadata' | 'attachments' | 'history'>(
+    'metadata',
+  )
   const setAttachments = (attachments: EditorDocumentV1['attachments']) =>
     onChange({ ...work, version: 1, attachments })
-
-  const updateSelected = (fn: (b: EmailBlock) => EmailBlock) => {
-    if (!targetId) return
-    setBlocks(
-      work.blocks.map((b) => (b.id === targetId ? fn(b) : b)),
-    )
-  }
-
-  const removeSelected = () => {
-    if (!targetId || work.blocks.length <= 1) return
-    if (!window.confirm('Remove this block?')) return
-    setBlocks(work.blocks.filter((b) => b.id !== targetId))
-    setSelected(null)
-  }
 
   const attachments = work.attachments ?? []
   const updateAttachment = (
@@ -120,7 +93,41 @@ export function EditorRightPanel({
       data-ec-properties=""
       className="ec-sidebar ec-sidebar--right"
     >
-      <div data-ec-sidebar-section="" className="ec-sidebar-section">
+      <div className="ec-right-tabs" aria-label="Editor properties sections">
+        <button
+          type="button"
+          className="ec-right-tab"
+          aria-pressed={activeTab === 'metadata'}
+          onClick={() => setActiveTab('metadata')}
+        >
+          <FileText size={12} aria-hidden="true" />
+          Metadata
+        </button>
+        <button
+          type="button"
+          className="ec-right-tab"
+          aria-pressed={activeTab === 'attachments'}
+          onClick={() => setActiveTab('attachments')}
+        >
+          <Paperclip size={12} aria-hidden="true" />
+          Attachments
+        </button>
+        <button
+          type="button"
+          className="ec-right-tab"
+          aria-pressed={activeTab === 'history'}
+          onClick={() => setActiveTab('history')}
+        >
+          <History size={12} aria-hidden="true" />
+          History
+        </button>
+      </div>
+      {activeTab === 'metadata' ? (
+        <div
+          id="ec-right-panel-metadata"
+          data-ec-sidebar-section=""
+          className="ec-sidebar-section"
+        >
         <h3 data-ec-h3="">Metadata</h3>
         <label className="ec-rfield" data-ec-field="">
           <span>Template name</span>
@@ -289,8 +296,14 @@ export function EditorRightPanel({
           />
         </label>
       </div>
+      ) : null}
 
-      <div data-ec-sidebar-section="" className="ec-sidebar-section">
+      {activeTab === 'attachments' ? (
+        <div
+          id="ec-right-panel-attachments"
+          data-ec-sidebar-section=""
+          className="ec-sidebar-section"
+        >
         <h3 data-ec-h3="">Attachments</h3>
         <div className="ec-rfield-inline">
           <button
@@ -387,530 +400,93 @@ export function EditorRightPanel({
           ))
         )}
       </div>
+      ) : null}
 
-      <div data-ec-sidebar-section="" className="ec-sidebar-section">
-        <h3 data-ec-h3="">History</h3>
-        {versions.length === 0 ? (
-          <p className="ec-muted">No versions yet</p>
-        ) : (
-          <div className="ec-history-list">
-            {versions
-              .slice()
-              .reverse()
-              .map((version) => (
-                <div
-                  key={version.versionId}
-                  className="ec-history-item"
-                  data-ec-kind={version.type}
-                  data-ec-active={
-                    activeVersionId === version.versionId ? '' : undefined
-                  }
-                >
-                  <div className="ec-history-item__meta">
-                    <strong>{version.type}</strong>
-                    <span>{formatRelative(version.savedAt)}</span>
-                  </div>
-                  <button
-                    type="button"
-                    data-ec-btn=""
-                    data-ec-variant="ghost"
-                    disabled={readOnly || !onRestore}
-                    onClick={() => onRestore?.(version.versionId)}
-                  >
-                    Restore
-                  </button>
-                </div>
-              ))}
+      {activeTab === 'history' ? (
+        <div
+          id="ec-right-panel-history"
+          data-ec-sidebar-section=""
+          className="ec-sidebar-section"
+        >
+          <h3 data-ec-h3="">History</h3>
+          <div className="ec-history-scroll">
+            {versions.length === 0 ? (
+              <p className="ec-muted">No versions yet</p>
+            ) : (
+              <div className="ec-history-list">
+                {versions
+                  .slice()
+                  .reverse()
+                  .map((version) => (
+                    <div
+                      key={version.versionId}
+                      className="ec-history-item"
+                      data-ec-kind={version.type}
+                      data-ec-active={
+                        activeVersionId === version.versionId ? '' : undefined
+                      }
+                    >
+                      <div className="ec-history-item__meta">
+                        <strong>{version.type}</strong>
+                        <span>{formatRelative(version.savedAt)}</span>
+                      </div>
+                      <button
+                        type="button"
+                        data-ec-btn=""
+                        data-ec-variant="ghost"
+                        disabled={readOnly || !onRestore}
+                        onClick={() => onRestore?.(version.versionId)}
+                      >
+                        Restore
+                      </button>
+                    </div>
+                  ))}
+              </div>
+            )}
           </div>
-        )}
-        {versions.length > 1 ? (
-          <div className="ec-rfield-stack">
-            <label data-ec-field="">
-              <span>Compare left</span>
-              <select
-                data-ec-input=""
-                value={compareLeftId}
-                onChange={(e) => onCompareChange?.(e.target.value, compareRightId)}
-              >
-                <option value="">Select version</option>
-                {versions.map((version) => (
-                  <option key={`l-${version.versionId}`} value={version.versionId}>
-                    {version.type} · {formatRelative(version.savedAt)}
-                  </option>
-                ))}
-              </select>
-            </label>
-            <label data-ec-field="">
-              <span>Compare right</span>
-              <select
-                data-ec-input=""
-                value={compareRightId}
-                onChange={(e) => onCompareChange?.(compareLeftId, e.target.value)}
-              >
-                <option value="">Select version</option>
-                {versions.map((version) => (
-                  <option key={`r-${version.versionId}`} value={version.versionId}>
-                    {version.type} · {formatRelative(version.savedAt)}
-                  </option>
-                ))}
-              </select>
-            </label>
-            {compareLeftId && compareRightId ? (
-              <div className="ec-rfield-inline">
-                <pre className="ec-diff-pane">{diffLeftHtml || '<!-- empty -->'}</pre>
-                <pre className="ec-diff-pane">{diffRightHtml || '<!-- empty -->'}</pre>
-              </div>
-            ) : null}
-          </div>
-        ) : null}
-      </div>
-
-      <div data-ec-sidebar-section="" className="ec-sidebar-section">
-        <h3 data-ec-h3="">Block</h3>
-        {!block ? (
-          <p className="ec-muted">No blocks</p>
-        ) : (
-          <>
-            <p className="ec-muted" data-ec-kicker="">
-              {block.type} · {block.id.slice(0, 8)}…
-            </p>
-            {block.type === 'image' && (
-              <div className="ec-rfield-stack">
-                <label data-ec-field="">
-                  <span>Image URL</span>
-                  <input
-                    data-ec-input=""
-                    value={block.props.url}
-                    disabled={readOnly}
-                    onChange={(e) =>
-                      updateSelected((b) =>
-                        b.type === 'image'
-                          ? {
-                              ...b,
-                              props: { ...b.props, url: e.target.value },
-                            }
-                          : b,
-                      )
-                    }
-                  />
-                </label>
-                <label data-ec-field="">
-                  <span>Alt</span>
-                  <input
-                    data-ec-input=""
-                    value={block.props.alt}
-                    disabled={readOnly}
-                    onChange={(e) =>
-                      updateSelected((b) =>
-                        b.type === 'image'
-                          ? {
-                              ...b,
-                              props: { ...b.props, alt: e.target.value },
-                            }
-                          : b,
-                      )
-                    }
-                  />
-                </label>
-                <label data-ec-field="">
-                  <span>Width (e.g. 100% or 400px)</span>
-                  <input
-                    data-ec-input=""
-                    value={block.props.width}
-                    disabled={readOnly}
-                    onChange={(e) =>
-                      updateSelected((b) =>
-                        b.type === 'image'
-                          ? {
-                              ...b,
-                              props: { ...b.props, width: e.target.value },
-                            }
-                          : b,
-                      )
-                    }
-                  />
-                </label>
-              </div>
-            )}
-            {block.type === 'button' && (
-              <div className="ec-rfield-stack">
-                <label data-ec-field="">
-                  <span>Label</span>
-                  <input
-                    data-ec-input=""
-                    value={block.props.label}
-                    disabled={readOnly}
-                    onChange={(e) =>
-                      updateSelected((b) =>
-                        b.type === 'button'
-                          ? {
-                              ...b,
-                              props: { ...b.props, label: e.target.value },
-                            }
-                          : b,
-                      )
-                    }
-                  />
-                </label>
-                <label data-ec-field="">
-                  <span>Link (URL or variable in Slice C)</span>
-                  <input
-                    data-ec-input=""
-                    value={block.props.href}
-                    disabled={readOnly}
-                    onChange={(e) =>
-                      updateSelected((b) =>
-                        b.type === 'button'
-                          ? {
-                              ...b,
-                              props: { ...b.props, href: e.target.value },
-                            }
-                          : b,
-                      )
-                    }
-                  />
-                </label>
-                <label data-ec-field="">
-                  <span>Full width</span>
-                  <input
-                    type="checkbox"
-                    checked={block.props.fullWidth}
-                    disabled={readOnly}
-                    onChange={(e) =>
-                      updateSelected((b) =>
-                        b.type === 'button'
-                          ? {
-                              ...b,
-                              props: { ...b.props, fullWidth: e.target.checked },
-                            }
-                          : b,
-                      )
-                    }
-                  />
-                </label>
-                <label data-ec-field="">
-                  <span>Background</span>
-                  <input
-                    data-ec-input=""
-                    type="color"
-                    value={block.props.backgroundColor}
-                    disabled={readOnly}
-                    onChange={(e) =>
-                      updateSelected((b) =>
-                        b.type === 'button'
-                          ? {
-                              ...b,
-                              props: {
-                                ...b.props,
-                                backgroundColor: e.target.value,
-                              },
-                            }
-                          : b,
-                      )
-                    }
-                  />
-                </label>
-              </div>
-            )}
-            {block.type === 'divider' && (
-              <div className="ec-rfield-stack">
-                <label data-ec-field="">
-                  <span>Thickness (px)</span>
-                  <input
-                    data-ec-input=""
-                    type="number"
-                    min={1}
-                    max={8}
-                    value={block.props.thickness}
-                    disabled={readOnly}
-                    onChange={(e) =>
-                      updateSelected((b) =>
-                        b.type === 'divider'
-                          ? {
-                              ...b,
-                              props: {
-                                ...b.props,
-                                thickness: Number(e.target.value) || 1,
-                              },
-                            }
-                          : b,
-                      )
-                    }
-                  />
-                </label>
-                <label data-ec-field="">
-                  <span>Color</span>
-                  <input
-                    data-ec-input=""
-                    type="color"
-                    value={block.props.color}
-                    disabled={readOnly}
-                    onChange={(e) =>
-                      updateSelected((b) =>
-                        b.type === 'divider'
-                          ? {
-                              ...b,
-                              props: { ...b.props, color: e.target.value },
-                            }
-                          : b,
-                      )
-                    }
-                  />
-                </label>
-              </div>
-            )}
-            {block.type === 'spacer' && (
+          {versions.length > 1 ? (
+            <div className="ec-rfield-stack ec-history-compare">
               <label data-ec-field="">
-                <span>Height (px)</span>
-                <input
+                <span>Compare left</span>
+                <select
                   data-ec-input=""
-                  type="number"
-                  min={4}
-                  max={400}
-                  value={block.props.height}
-                  disabled={readOnly}
-                  onChange={(e) =>
-                    updateSelected((b) =>
-                      b.type === 'spacer'
-                        ? {
-                            ...b,
-                            props: {
-                              ...b.props,
-                              height: Number(e.target.value) || 8,
-                            },
-                          }
-                        : b,
-                    )
-                  }
-                />
+                  value={compareLeftId}
+                  onChange={(e) => onCompareChange?.(e.target.value, compareRightId)}
+                >
+                  <option value="">Select version</option>
+                  {versions.map((version) => (
+                    <option key={`l-${version.versionId}`} value={version.versionId}>
+                      {version.type} · {formatRelative(version.savedAt)}
+                    </option>
+                  ))}
+                </select>
               </label>
-            )}
-            {block.type === 'text' && (
-              <p className="ec-muted">Tip: use @ in text for variables</p>
-            )}
-            {block.type === 'conditional' && (
-              <div className="ec-rfield-stack">
-                <label data-ec-field="">
-                  <span>Variable key</span>
-                  <input
-                    data-ec-input=""
-                    value={block.props.variableKey}
-                    disabled={readOnly}
-                    onChange={(e) =>
-                      updateSelected((b) =>
-                        b.type === 'conditional'
-                          ? {
-                              ...b,
-                              props: { ...b.props, variableKey: e.target.value },
-                            }
-                          : b,
-                      )
-                    }
-                  />
-                </label>
-                <label data-ec-field="">
-                  <span>Operator</span>
-                  <select
-                    data-ec-input=""
-                    value={block.props.operator}
-                    disabled={readOnly}
-                    onChange={(e) =>
-                      updateSelected((b) =>
-                        b.type === 'conditional'
-                          ? {
-                              ...b,
-                              props: {
-                                ...b.props,
-                                operator: e.target.value as typeof b.props.operator,
-                              },
-                            }
-                          : b,
-                      )
-                    }
-                  >
-                    <option value="truthy">truthy</option>
-                    <option value="equals">equals</option>
-                    <option value="not_equals">not_equals</option>
-                    <option value="contains">contains</option>
-                    <option value="not_empty">not_empty</option>
-                  </select>
-                </label>
-                <label data-ec-field="">
-                  <span>Compare value</span>
-                  <input
-                    data-ec-input=""
-                    value={block.props.compareValue}
-                    disabled={readOnly}
-                    onChange={(e) =>
-                      updateSelected((b) =>
-                        b.type === 'conditional'
-                          ? {
-                              ...b,
-                              props: { ...b.props, compareValue: e.target.value },
-                            }
-                          : b,
-                      )
-                    }
-                  />
-                </label>
+              <label data-ec-field="">
+                <span>Compare right</span>
+                <select
+                  data-ec-input=""
+                  value={compareRightId}
+                  onChange={(e) => onCompareChange?.(compareLeftId, e.target.value)}
+                >
+                  <option value="">Select version</option>
+                  {versions.map((version) => (
+                    <option key={`r-${version.versionId}`} value={version.versionId}>
+                      {version.type} · {formatRelative(version.savedAt)}
+                    </option>
+                  ))}
+                </select>
+              </label>
+              {compareLeftId && compareRightId ? (
                 <div className="ec-rfield-inline">
-                  <button
-                    type="button"
-                    data-ec-btn=""
-                    data-ec-variant="ghost"
-                    disabled={readOnly}
-                    onClick={() =>
-                      updateSelected((b) =>
-                        b.type === 'conditional'
-                          ? {
-                              ...b,
-                              props: {
-                                ...b.props,
-                                thenBlocks: [
-                                  ...b.props.thenBlocks,
-                                  { id: newBlockId(), type: 'text', props: { doc: emptyTiptap } },
-                                ],
-                              },
-                            }
-                          : b,
-                      )
-                    }
-                  >
-                    Add Then block
-                  </button>
-                  <button
-                    type="button"
-                    data-ec-btn=""
-                    data-ec-variant="ghost"
-                    disabled={readOnly}
-                    onClick={() =>
-                      updateSelected((b) =>
-                        b.type === 'conditional'
-                          ? {
-                              ...b,
-                              props: {
-                                ...b.props,
-                                elseBlocks: [
-                                  ...b.props.elseBlocks,
-                                  { id: newBlockId(), type: 'text', props: { doc: emptyTiptap } },
-                                ],
-                              },
-                            }
-                          : b,
-                      )
-                    }
-                  >
-                    Add Else block
-                  </button>
+                  <pre className="ec-diff-pane">{diffLeftHtml || '<!-- empty -->'}</pre>
+                  <pre className="ec-diff-pane">{diffRightHtml || '<!-- empty -->'}</pre>
                 </div>
-              </div>
-            )}
-            {block.type === 'loop' && (
-              <div className="ec-rfield-stack">
-                <label data-ec-field="">
-                  <span>Array key</span>
-                  <input
-                    data-ec-input=""
-                    value={block.props.arrayKey}
-                    disabled={readOnly}
-                    onChange={(e) =>
-                      updateSelected((b) =>
-                        b.type === 'loop'
-                          ? {
-                              ...b,
-                              props: { ...b.props, arrayKey: e.target.value },
-                            }
-                          : b,
-                      )
-                    }
-                  />
-                </label>
-                <label data-ec-field="">
-                  <span>Item alias</span>
-                  <input
-                    data-ec-input=""
-                    value={block.props.itemAlias}
-                    disabled={readOnly}
-                    onChange={(e) =>
-                      updateSelected((b) =>
-                        b.type === 'loop'
-                          ? {
-                              ...b,
-                              props: { ...b.props, itemAlias: e.target.value || 'item' },
-                            }
-                          : b,
-                      )
-                    }
-                  />
-                </label>
-                <div className="ec-rfield-inline">
-                  <button
-                    type="button"
-                    data-ec-btn=""
-                    data-ec-variant="ghost"
-                    disabled={readOnly}
-                    onClick={() =>
-                      updateSelected((b) =>
-                        b.type === 'loop'
-                          ? {
-                              ...b,
-                              props: {
-                                ...b.props,
-                                bodyBlocks: [
-                                  ...b.props.bodyBlocks,
-                                  { id: newBlockId(), type: 'text', props: { doc: emptyTiptap } },
-                                ],
-                              },
-                            }
-                          : b,
-                      )
-                    }
-                  >
-                    Add Body block
-                  </button>
-                  <button
-                    type="button"
-                    data-ec-btn=""
-                    data-ec-variant="ghost"
-                    disabled={readOnly}
-                    onClick={() =>
-                      updateSelected((b) =>
-                        b.type === 'loop'
-                          ? {
-                              ...b,
-                              props: {
-                                ...b.props,
-                                emptyBlocks: [
-                                  ...b.props.emptyBlocks,
-                                  { id: newBlockId(), type: 'text', props: { doc: emptyTiptap } },
-                                ],
-                              },
-                            }
-                          : b,
-                      )
-                    }
-                  >
-                    Add Empty block
-                  </button>
-                </div>
-              </div>
-            )}
+              ) : null}
+            </div>
+          ) : null}
+        </div>
+      ) : null}
 
-            {work.blocks.length > 1 && (
-              <button
-                type="button"
-                data-ec-btn=""
-                data-ec-variant="ghost"
-                onClick={removeSelected}
-                disabled={readOnly}
-              >
-                <Trash2 size={14} />
-                Remove block
-              </button>
-            )}
-          </>
-        )}
-      </div>
     </aside>
   )
 }

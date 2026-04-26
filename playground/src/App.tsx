@@ -52,8 +52,8 @@ export default function App() {
       <header className="pg-header">
         <h1>RETM Library Playground</h1>
         <p>
-          Phase 1 Slice A. Library view, storage round-trip, themes, Dialog vs
-          inline mounting. The full visual editor ships in Slice B.
+          Library view, inline and dialog-mounted editor, storage round-trip,
+          themes, and the read-only template viewer demo.
         </p>
         <div className="pg-controls">
           <label className="pg-ctrl">
@@ -141,8 +141,8 @@ export default function App() {
           <h2>Inline mode</h2>
         </div>
         <p className="pg-muted">
-          Embedded full-surface panel, no modal wrapping. Uses a different
-          storage key so the two demos stay independent.
+          Embedded full-surface panel, no modal wrapping. Shares storage with
+          the viewer section below so drafts appear in the list when enabled.
         </p>
         <EmailTemplatePanel
           variableSchema={variableSchema}
@@ -159,16 +159,27 @@ export default function App() {
 
       <section className="pg-section">
         <div className="pg-section-head">
-          <h2>EmailTemplateViewer (Phase 2)</h2>
+          <h2>EmailTemplateViewer</h2>
         </div>
         <p className="pg-muted">
-          Baseline viewer with template list, preview/code tabs, and viewport
-          toggle.
+          Template list with preview and code tabs (Shiki), viewport toggle, and
+          optional inclusion of drafts from the inline editor.
         </p>
         <EmailTemplateViewer
           storageMode="local"
           storageKey="retm-library:playground:inline"
           defaultView="grid"
+          includeNonPublished
+          exportContext={{
+            variableSchema,
+            tokenFormat: 'handlebars',
+            sampleData: {
+              user: { firstName: 'John', lastName: 'Doe' },
+              job: { title: 'Software Engineer', company: 'Acme Corp' },
+              order: { id: '#12345', total: '$99.99' },
+            },
+          }}
+          codeView={{ enabled: true, defaultTab: 'preview' }}
           theme={theme}
           headless={headless}
           themeOverride={overridePrimary ? { '--ec-primary': '#7c3aed' } : undefined}

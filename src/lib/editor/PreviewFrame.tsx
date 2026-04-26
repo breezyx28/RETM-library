@@ -20,6 +20,7 @@ export function PreviewFrame({
         className="ec-preview__frame"
         style={{
           width: viewport === 'mobile' ? 375 : '100%',
+          maxWidth: '100%',
           filter: darkMode ? 'invert(1) hue-rotate(180deg)' : undefined,
         }}
       />

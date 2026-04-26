@@ -143,9 +143,13 @@ export function migrateEditorJson(raw: unknown): EditorDocumentV1 {
     Array.isArray((raw as EditorDocumentV1).blocks)
   ) {
     const doc = raw as EditorDocumentV1
+    const sanitized = doc.blocks.map(sanitizeBlock).filter(Boolean) as EmailBlock[]
+    const migratedInline = migrateLegacyInlineBlocks(sanitized)
     return {
       version: EDITOR_DOC_VERSION,
-      blocks: doc.blocks.map(sanitizeBlock).filter(Boolean) as EmailBlock[],
+      blocks: migratedInline.length
+        ? migratedInline
+        : [defaultTextBlock(createId('blk'))],
       attachments: sanitizeAttachments(
         (doc as EditorDocumentV1).attachments,
       ),
@@ -184,6 +188,106 @@ export function migrateEditorJson(raw: unknown): EditorDocumentV1 {
     blocks: [defaultTextBlock(createId('blk'))],
     attachments: [],
   }
+}
+
+function legacyInlineNodeFromBlock(
+  block: Extract<EmailBlock, { type: 'image' | 'button' | 'divider' | 'spacer' }>,
+): JSONContent {
+  if (block.type === 'image') {
+    return {
+      type: 'ecPlugin',
+      attrs: {
+        id: block.id,
+        kind: 'image',
+        label: 'Image',
+        url: block.props.url,
+        alt: block.props.alt,
+        width: block.props.width,
+        align: block.props.align,
+        linkUrl: block.props.linkUrl ?? '',
+      },
+    }
+  }
+  if (block.type === 'button') {
+    return {
+      type: 'ecPlugin',
+      attrs: {
+        id: block.id,
+        kind: 'button',
+        label: 'Button',
+        buttonLabel: block.props.label,
+        buttonHref: block.props.href,
+        fullWidth: block.props.fullWidth,
+        backgroundColor: block.props.backgroundColor,
+        textColor: block.props.textColor,
+        borderRadius: block.props.borderRadius,
+      },
+    }
+  }
+  if (block.type === 'divider') {
+    return {
+      type: 'ecPlugin',
+      attrs: {
+        id: block.id,
+        kind: 'divider',
+        label: 'Divider',
+        lineStyle: block.props.lineStyle,
+        thickness: block.props.thickness,
+        color: block.props.color,
+      },
+    }
+  }
+  return {
+    type: 'ecPlugin',
+    attrs: {
+      id: block.id,
+      kind: 'spacer',
+      label: 'Spacer',
+      height: block.props.height,
+    },
+  }
+}
+
+function migrateLegacyInlineBlocks(blocks: EmailBlock[]): EmailBlock[] {
+  if (!blocks.some((b) => b.type === 'image' || b.type === 'button' || b.type === 'divider' || b.type === 'spacer')) {
+    return blocks
+  }
+
+  const firstTextIndex = blocks.findIndex((b) => b.type === 'text')
+  if (firstTextIndex < 0) return blocks
+
+  const firstText = blocks[firstTextIndex] as Extract<EmailBlock, { type: 'text' }>
+  const incoming = Array.isArray(firstText.props.doc?.content)
+    ? [...(firstText.props.doc.content as JSONContent[])]
+    : [{ type: 'paragraph' }]
+
+  for (const block of blocks) {
+    if (block.type === 'image' || block.type === 'button' || block.type === 'divider' || block.type === 'spacer') {
+      incoming.push(legacyInlineNodeFromBlock(block))
+      incoming.push({ type: 'paragraph' })
+    }
+  }
+
+  const migratedText: EmailBlock = {
+    ...firstText,
+    props: {
+      doc: {
+        ...(firstText.props.doc ?? { type: 'doc' }),
+        type: 'doc',
+        content: incoming,
+      },
+    },
+  }
+
+  return blocks
+    .filter(
+      (b) =>
+        b.type !== 'image' &&
+        b.type !== 'button' &&
+        b.type !== 'divider' &&
+        b.type !== 'spacer',
+    )
+    .map((b, idx) => (idx === firstTextIndex ? migratedText : b))
 }
 
 function sanitizeBlock(b: unknown): EmailBlock | null {

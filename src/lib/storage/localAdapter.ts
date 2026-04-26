@@ -1,5 +1,6 @@
 import type { Template, TemplateVersion } from '../../types'
 import type { SavedBlock } from '../types/savedBlock'
+import { notifyLocalTemplatesChanged } from './localTemplateEvents'
 import { StorageAdapterError, type StorageAdapter } from './types'
 
 /**
@@ -40,6 +41,7 @@ export function createLocalStorageAdapter(
     if (typeof window === 'undefined' || !window.localStorage) return
     try {
       window.localStorage.setItem(key, JSON.stringify(templates))
+      notifyLocalTemplatesChanged(key)
     } catch (error) {
       throw new StorageAdapterError(
         `Failed to write templates to localStorage: ${(error as Error).message}`,

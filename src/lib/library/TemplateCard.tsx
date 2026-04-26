@@ -41,7 +41,7 @@ export function TemplateCard({
         type="button"
         data-ec-card-thumb=""
         onClick={canEdit ? onEdit : onPreview}
-        aria-label={`Edit ${template.name}`}
+        aria-label={`${canEdit ? 'Edit' : 'Preview'} ${template.name}`}
       >
         {thumbnailHtml ? (
           <iframe

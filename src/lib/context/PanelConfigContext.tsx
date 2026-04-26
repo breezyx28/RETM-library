@@ -11,7 +11,7 @@ export interface FlatVariable {
   type: string
   group: string
   color?: string
-  sample?: string | number | boolean
+  sample?: import('../../types').VariableSampleValue
 }
 
 type ExportCallbackPayload = {

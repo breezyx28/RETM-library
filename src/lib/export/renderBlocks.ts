@@ -1,7 +1,7 @@
 import type { JSONContent } from '@tiptap/core'
 import type { AttachmentItem, EmailBlock } from '../types/editorDocument'
 import type { RenderContext } from './types'
-import { renderVariableToken } from './tokenHydration'
+import { renderVariableByMode, renderVariableToken } from './tokenHydration'
 import {
   attachmentDisplayLabel,
   classifyAttachment,
@@ -13,10 +13,34 @@ function styleAttr(style: string): string {
   return ` style="${style}"`
 }
 
+function alignFromAttrs(attrs: Record<string, unknown> | undefined): string {
+  const value = attrs?.textAlign
+  if (value === 'center' || value === 'right' || value === 'justify' || value === 'left') {
+    return `text-align:${value};`
+  }
+  return ''
+}
+
+function textStyleFromMark(mark: { attrs?: Record<string, unknown> }): string {
+  const attrs = mark.attrs ?? {}
+  const parts: string[] = []
+  if (typeof attrs.color === 'string' && attrs.color) parts.push(`color:${attrs.color}`)
+  if (typeof attrs.fontFamily === 'string' && attrs.fontFamily)
+    parts.push(`font-family:${attrs.fontFamily}`)
+  if (typeof attrs.fontSize === 'string' && attrs.fontSize)
+    parts.push(`font-size:${attrs.fontSize}`)
+  return parts.join(';')
+}
+
 function renderTextNode(node: JSONContent, ctx: RenderContext): string {
   if (node.type === 'text') {
     const marks = node.marks ?? []
     let out = he.escape(node.text ?? '')
+    const style = marks
+      .filter((m) => m.type === 'textStyle')
+      .map((m) => textStyleFromMark(m))
+      .filter(Boolean)
+      .join(';')
     for (const mark of marks) {
       if (mark.type === 'bold') out = `<strong>${out}</strong>`
       if (mark.type === 'italic') out = `<em>${out}</em>`
@@ -27,6 +51,7 @@ function renderTextNode(node: JSONContent, ctx: RenderContext): string {
         out = `<a href="${href}" target="_blank" rel="noopener noreferrer">${out}</a>`
       }
     }
+    if (style) out = `<span${styleAttr(style)}>${out}</span>`
     return out
   }
 
@@ -34,12 +59,88 @@ function renderTextNode(node: JSONContent, ctx: RenderContext): string {
 
   if (node.type === 'ecVariable') {
     const key = String(node.attrs?.key ?? '')
-    return renderVariableToken(ctx, key)
+    const renderAs = String(node.attrs?.renderAs ?? 'text') as
+      | 'text'
+      | 'link'
+      | 'image'
+      | 'table'
+      | 'list'
+    return renderVariableByMode(ctx, {
+      key,
+      renderAs,
+      listStyle:
+        String(node.attrs?.listStyle ?? 'unordered') === 'ordered'
+          ? 'ordered'
+          : 'unordered',
+      imageWidth: Number(node.attrs?.imageWidth ?? 240),
+      imageHeight: Number(node.attrs?.imageHeight ?? 120),
+      imageRadius: Number(node.attrs?.imageRadius ?? 8),
+    })
+  }
+
+  if (node.type === 'image') {
+    const src = he.escape(String(node.attrs?.src ?? ''))
+    if (!src) return ''
+    const alt = he.escape(String(node.attrs?.alt ?? ''))
+    return `<img src="${src}" alt="${alt}"${styleAttr('display:block;max-width:100%;height:auto;border:0;border-radius:4px;margin:8px 0;')}/>`
+  }
+
+  if (node.type === 'ecPlugin') {
+    const attrs = (node.attrs ?? {}) as Record<string, unknown>
+    const kind = String(attrs.kind ?? '')
+    if (kind === 'image') {
+      const src = he.escape(String(attrs.url ?? ''))
+      if (!src) return ''
+      const alt = he.escape(String(attrs.alt ?? ''))
+      const width = he.escape(String(attrs.width ?? '100%'))
+      const align = he.escape(String(attrs.align ?? 'center'))
+      const img = `<img src="${src}" alt="${alt}" width="${width.replace('%', '')}"${styleAttr('display:block;border:0;max-width:100%;height:auto;border-radius:4px;margin:8px 0;')}/>`
+      const linkUrl = String(attrs.linkUrl ?? '').trim()
+      const content = linkUrl
+        ? `<a href="${he.escape(linkUrl)}" target="_blank" rel="noopener noreferrer">${img}</a>`
+        : img
+      return `<div${styleAttr(`text-align:${align};`)}>${content}</div>`
+    }
+    if (kind === 'button') {
+      const label = he.escape(String(attrs.buttonLabel ?? 'Button'))
+      const href = he.escape(String(attrs.buttonHref ?? '#'))
+      const radius = Math.max(0, Number(attrs.borderRadius ?? 0))
+      const bg = he.escape(String(attrs.backgroundColor ?? '#2563eb'))
+      const fg = he.escape(String(attrs.textColor ?? '#ffffff'))
+      const fullWidth = Boolean(attrs.fullWidth)
+      const tableWidth = fullWidth ? '100%' : 'auto'
+      const align = fullWidth ? 'center' : 'left'
+      return `<table role="presentation" cellspacing="0" cellpadding="0" border="0" width="${tableWidth}"${styleAttr('margin:8px 0;')}><tr><td align="${align}" bgcolor="${bg}"${styleAttr(`border-radius:${radius}px;text-align:center;`)}><a href="${href}" target="_blank" rel="noopener noreferrer"${styleAttr(`display:block;padding:12px 20px;color:${fg};text-decoration:none;font-weight:600;`)}>${label}</a></td></tr></table>`
+    }
+    if (kind === 'divider') {
+      const style = he.escape(String(attrs.lineStyle ?? 'solid'))
+      const thickness = Math.max(1, Number(attrs.thickness ?? 1))
+      const color = he.escape(String(attrs.color ?? '#e5e7eb'))
+      return `<hr${styleAttr(`border:0;border-top:${thickness}px ${style} ${color};margin:12px 0;`)}/>`
+    }
+    if (kind === 'spacer') {
+      const height = Math.max(0, Number(attrs.height ?? 24))
+      return `<div${styleAttr(`height:${height}px;line-height:${height}px;font-size:0;`)}>&nbsp;</div>`
+    }
   }
 
   if (node.type === 'paragraph') {
     const children = (node.content ?? []).map((c) => renderTextNode(c, ctx)).join('')
-    return `<p${styleAttr('margin:0 0 14px;line-height:1.6;color:#111827;font-size:15px;')}>${children || '&nbsp;'}</p>`
+    const style = `margin:0 0 14px;line-height:1.6;color:#111827;font-size:15px;${alignFromAttrs(node.attrs)}`
+    return `<p${styleAttr(style)}>${children || '&nbsp;'}</p>`
+  }
+
+  if (node.type === 'heading') {
+    const level = Math.min(3, Math.max(1, Number(node.attrs?.level ?? 1)))
+    const children = (node.content ?? []).map((c) => renderTextNode(c, ctx)).join('')
+    const sizes: Record<number, string> = { 1: '24px', 2: '20px', 3: '16px' }
+    const margins: Record<number, string> = {
+      1: '16px 0 8px',
+      2: '14px 0 6px',
+      3: '12px 0 4px',
+    }
+    const style = `font-size:${sizes[level]};font-weight:700;line-height:1.3;color:#111827;margin:${margins[level]};${alignFromAttrs(node.attrs)}`
+    return `<h${level}${styleAttr(style)}>${children || '&nbsp;'}</h${level}>`
   }
 
   if (node.type === 'bulletList') {

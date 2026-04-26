@@ -16,6 +16,25 @@ export type VariableType =
   | 'boolean'
   | 'array'
 
+export type VariableRenderAs = 'text' | 'link' | 'image' | 'table' | 'list'
+
+export type VariableListSample = string[]
+
+export interface VariableTableSample {
+  table: {
+    headers: string[]
+    rows: Record<string, unknown>[]
+  }
+}
+
+export type VariableSampleValue =
+  | string
+  | number
+  | boolean
+  | VariableListSample
+  | VariableTableSample
+  | Record<string, unknown>
+
 export interface Variable {
   /** Dot-path key used on export, e.g. `user.firstName`. */
   key: string
@@ -26,7 +45,7 @@ export interface Variable {
   /** If true, pre-export validation fails when the template doesn't use it. */
   required?: boolean
   /** Example value used in Hydrated Preview and Plain HTML export (spec §8, §9). */
-  sample?: string | number | boolean
+  sample?: VariableSampleValue
   /** Optional description shown in chip tooltip. */
   description?: string
 }

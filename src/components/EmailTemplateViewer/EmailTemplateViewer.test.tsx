@@ -37,6 +37,25 @@ describe('EmailTemplateViewer', () => {
     expect(screen.getByText('No templates found.')).toBeTruthy()
   })
 
+  it('marks selected template when row clicked', async () => {
+    const alpha = { ...baseTemplate, id: 'a', name: 'Alpha One' }
+    const beta = {
+      ...baseTemplate,
+      id: 'b',
+      name: 'Beta Two',
+      updatedAt: '2026-01-02T00:00:00.000Z',
+    }
+    render(
+      <EmailTemplateViewer storageMode="backend" onLoad={() => Promise.resolve([alpha, beta])} />,
+    )
+    await screen.findByText('Alpha One')
+    const betaBtn = screen.getByRole('button', { name: /Beta Two/i })
+    fireEvent.click(betaBtn)
+    expect(betaBtn.getAttribute('data-ec-active')).toBe('')
+    const alphaBtn = screen.getByRole('button', { name: /Alpha One/i })
+    expect(alphaBtn.getAttribute('data-ec-active')).toBeNull()
+  })
+
   it(
     'shows failure feedback when clipboard write fails',
     async () => {

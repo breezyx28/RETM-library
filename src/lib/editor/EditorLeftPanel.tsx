@@ -1,36 +1,11 @@
-import {
-  Type,
-  Image,
-  MousePointer2,
-  Minus,
-  MoveVertical,
-  GitBranch,
-  Repeat,
-  Columns2,
-  Columns3,
-} from 'lucide-react'
-import { useMemo, useState } from 'react'
+import { Variable, FolderSearch, MoreVertical, Mail } from 'lucide-react'
+import { useMemo, useState, type CSSProperties } from 'react'
+import * as DropdownMenu from '@radix-ui/react-dropdown-menu'
 import { usePanelConfig, type FlatVariable } from '../context/PanelConfigContext'
 import { usePanelStore } from '../store'
-import type { EmailBlock } from '../types/editorDocument'
-import {
-  defaultButton,
-  defaultConditional,
-  defaultDivider,
-  defaultImage,
-  defaultLoop,
-  defaultSpacer,
-  defaultThreeColumn,
-  defaultTwoColumn,
-  newBlockId,
-} from '../types/editorDocument'
 import type { EditorDocumentV1 } from '../types/editorDocument'
 import type { SavedBlock } from '../types/savedBlock'
-
-const emptyTiptap = {
-  type: 'doc' as const,
-  content: [{ type: 'paragraph' as const }],
-}
+import { EMAIL_PRESETS, type EmailPreset } from './presets/emailPresets'
 
 export function EditorLeftPanel({
   work,
@@ -40,20 +15,29 @@ export function EditorLeftPanel({
   savedBlocks,
   onInsertSavedBlock,
   onDeleteSavedBlock,
+  onPickPreset,
 }: {
   work: EditorDocumentV1
   onChange: (next: EditorDocumentV1) => void
   readOnly: boolean
-  onInsertVariable: (v: FlatVariable) => void
+  onInsertVariable: (
+    v: FlatVariable,
+    options?: {
+      renderAs?: 'text' | 'link' | 'image' | 'table' | 'list'
+      listStyle?: 'ordered' | 'unordered'
+    },
+  ) => void
   savedBlocks: SavedBlock[]
   onInsertSavedBlock: (saved: SavedBlock) => void
   onDeleteSavedBlock: (savedBlockId: string) => void
+  onPickPreset: (preset: EmailPreset) => void
 }) {
   const { variableSchema } = usePanelConfig()
   const activeTextBlockId = usePanelStore((s) => s.activeTextBlockId)
   const setActiveTextBlockId = usePanelStore((s) => s.setActiveTextBlockId)
-  const [tab, setTab] = useState<'blocks' | 'saved'>('blocks')
+  const [tab, setTab] = useState<'variables' | 'templates' | 'saved'>('variables')
   const [savedQuery, setSavedQuery] = useState('')
+  const [openVarMenuKey, setOpenVarMenuKey] = useState<string | null>(null)
   const filteredSaved = useMemo(() => {
     const q = savedQuery.trim().toLowerCase()
     if (!q) return savedBlocks
@@ -62,8 +46,10 @@ export function EditorLeftPanel({
     )
   }, [savedBlocks, savedQuery])
 
-  const addBlock = (b: EmailBlock) => {
-    onChange({ ...work, version: 1, blocks: [...work.blocks, b] })
+  const ensureActiveTextTarget = () => {
+    if (activeTextBlockId) return
+    const firstText = work.blocks.find((b) => b.type === 'text')
+    if (firstText) setActiveTextBlockId(firstText.id)
   }
 
   if (readOnly) {
@@ -80,129 +66,288 @@ export function EditorLeftPanel({
       data-ec-sidebar-left=""
       className="ec-sidebar"
     >
-      <div data-ec-sidebar-section="" className="ec-sidebar-section">
-        <div className="ec-rfield-inline" style={{ marginBottom: 8 }}>
-          <button type="button" data-ec-btn="" data-ec-variant={tab === 'blocks' ? 'primary' : 'ghost'} onClick={() => setTab('blocks')}>
-            Blocks
+      <div data-ec-sidebar-section="" className="ec-sidebar-section ec-sidebar-section--compact">
+        <div className="ec-left-tabs" aria-label="Editor insertion options">
+          <button
+            type="button"
+            className="ec-left-tab"
+            aria-pressed={tab === 'variables'}
+            onClick={() => setTab('variables')}
+            title="Variables"
+          >
+            <Variable size={14} />
+            <span>Variables</span>
           </button>
-          <button type="button" data-ec-btn="" data-ec-variant={tab === 'saved' ? 'primary' : 'ghost'} onClick={() => setTab('saved')}>
-            Saved
+          <button
+            type="button"
+            className="ec-left-tab"
+            aria-pressed={tab === 'templates'}
+            onClick={() => setTab('templates')}
+            title="Templates"
+          >
+            <Mail size={14} />
+            <span>Templates</span>
+          </button>
+          <button
+            type="button"
+            className="ec-left-tab"
+            aria-pressed={tab === 'saved'}
+            onClick={() => setTab('saved')}
+            title="Saved"
+          >
+            <FolderSearch size={14} />
+            <span>Saved</span>
           </button>
         </div>
-        {tab === 'blocks' ? (
-          <>
-        <h3 data-ec-h3="">Blocks</h3>
-        <div className="ec-palette">
-          <button
-            type="button"
-            className="ec-palette__btn"
-            onClick={() =>
-              addBlock({ id: newBlockId(), type: 'text', props: { doc: emptyTiptap } })
-            }
+        {tab === 'variables' ? (
+          <section
+            id="ec-left-panel-variables"
+            className="ec-left-panel-content"
           >
-            <Type size={16} />
-            <span>Text</span>
-          </button>
-          <button
-            type="button"
-            className="ec-palette__btn"
-            onClick={() =>
-              addBlock({ id: newBlockId(), type: 'image', props: defaultImage() })
-            }
+            <h3 data-ec-h3="">Variables</h3>
+            <p className="ec-hint">Insert variable chips in the active text block.</p>
+            {variableSchema.length === 0 ? (
+              <p className="ec-muted">No variable schema on this panel.</p>
+            ) : (
+              variableSchema.map((g) => (
+                <div key={g.group} className="ec-var-group">
+                  <div className="ec-var-group__name">{g.group}</div>
+                  {g.variables.map((v) => (
+                    <div
+                      key={v.key}
+                      className="ec-var-pill-wrap"
+                      style={
+                        g.color
+                          ? ({ ['--ec-pill-tint' as string]: g.color } as CSSProperties)
+                          : undefined
+                      }
+                    >
+                      <button
+                        type="button"
+                        className="ec-var-pill"
+                        onClick={() => {
+                          ensureActiveTextTarget()
+                          onInsertVariable({
+                            key: v.key,
+                            label: v.label,
+                            type: v.type,
+                            group: g.group,
+                            color: g.color,
+                            sample: v.sample,
+                          })
+                          setOpenVarMenuKey(null)
+                        }}
+                      >
+                        {v.label}
+                      </button>
+                      <DropdownMenu.Root
+                        open={openVarMenuKey === v.key}
+                        onOpenChange={(open) => setOpenVarMenuKey(open ? v.key : null)}
+                      >
+                        <DropdownMenu.Trigger asChild>
+                          <button
+                            type="button"
+                            className="ec-var-pill-more"
+                            aria-label={`Variable options for ${v.label}`}
+                          >
+                            <MoreVertical size={12} />
+                          </button>
+                        </DropdownMenu.Trigger>
+                        <DropdownMenu.Portal>
+                          <DropdownMenu.Content
+                            data-ec-menu=""
+                            className="ec-var-menu"
+                            sideOffset={6}
+                            align="end"
+                          >
+                            <DropdownMenu.Item
+                              data-ec-menu-item=""
+                              className="ec-var-menu__item"
+                              onSelect={() => {
+                                ensureActiveTextTarget()
+                                onInsertVariable(
+                                  {
+                                    key: v.key,
+                                    label: v.label,
+                                    type: v.type,
+                                    group: g.group,
+                                    color: g.color,
+                                    sample: v.sample,
+                                  },
+                                  { renderAs: 'text' },
+                                )
+                                setOpenVarMenuKey(null)
+                              }}
+                            >
+                              Text
+                            </DropdownMenu.Item>
+                            <DropdownMenu.Item
+                              data-ec-menu-item=""
+                              className="ec-var-menu__item"
+                              onSelect={() => {
+                                ensureActiveTextTarget()
+                                onInsertVariable(
+                                  {
+                                    key: v.key,
+                                    label: v.label,
+                                    type: v.type,
+                                    group: g.group,
+                                    color: g.color,
+                                    sample: v.sample,
+                                  },
+                                  { renderAs: 'link' },
+                                )
+                                setOpenVarMenuKey(null)
+                              }}
+                            >
+                              Link
+                            </DropdownMenu.Item>
+                            <DropdownMenu.Item
+                              data-ec-menu-item=""
+                              className="ec-var-menu__item"
+                              onSelect={() => {
+                                ensureActiveTextTarget()
+                                onInsertVariable(
+                                  {
+                                    key: v.key,
+                                    label: v.label,
+                                    type: v.type,
+                                    group: g.group,
+                                    color: g.color,
+                                    sample: v.sample,
+                                  },
+                                  { renderAs: 'image' },
+                                )
+                                setOpenVarMenuKey(null)
+                              }}
+                            >
+                              Image
+                            </DropdownMenu.Item>
+                            <DropdownMenu.Item
+                              data-ec-menu-item=""
+                              className="ec-var-menu__item"
+                              onSelect={() => {
+                                ensureActiveTextTarget()
+                                onInsertVariable(
+                                  {
+                                    key: v.key,
+                                    label: v.label,
+                                    type: v.type,
+                                    group: g.group,
+                                    color: g.color,
+                                    sample: v.sample,
+                                  },
+                                  { renderAs: 'table' },
+                                )
+                                setOpenVarMenuKey(null)
+                              }}
+                            >
+                              Table
+                            </DropdownMenu.Item>
+                            <DropdownMenu.Item
+                              data-ec-menu-item=""
+                              className="ec-var-menu__item"
+                              onSelect={() => {
+                                ensureActiveTextTarget()
+                                onInsertVariable(
+                                  {
+                                    key: v.key,
+                                    label: v.label,
+                                    type: v.type,
+                                    group: g.group,
+                                    color: g.color,
+                                    sample: v.sample,
+                                  },
+                                  { renderAs: 'list', listStyle: 'unordered' },
+                                )
+                                setOpenVarMenuKey(null)
+                              }}
+                            >
+                              List (unordered)
+                            </DropdownMenu.Item>
+                            <DropdownMenu.Item
+                              data-ec-menu-item=""
+                              className="ec-var-menu__item"
+                              onSelect={() => {
+                                ensureActiveTextTarget()
+                                onInsertVariable(
+                                  {
+                                    key: v.key,
+                                    label: v.label,
+                                    type: v.type,
+                                    group: g.group,
+                                    color: g.color,
+                                    sample: v.sample,
+                                  },
+                                  { renderAs: 'list', listStyle: 'ordered' },
+                                )
+                                setOpenVarMenuKey(null)
+                              }}
+                            >
+                              List (ordered)
+                            </DropdownMenu.Item>
+                          </DropdownMenu.Content>
+                        </DropdownMenu.Portal>
+                      </DropdownMenu.Root>
+                    </div>
+                  ))}
+                </div>
+              ))
+            )}
+          </section>
+        ) : null}
+        {tab === 'templates' ? (
+          <section
+            id="ec-left-panel-templates"
+            className="ec-left-panel-content"
           >
-            <Image size={16} />
-            <span>Image</span>
-          </button>
-          <button
-            type="button"
-            className="ec-palette__btn"
-            onClick={() =>
-              addBlock({ id: newBlockId(), type: 'button', props: defaultButton() })
-            }
+            <h3 data-ec-h3="">Email templates</h3>
+            <p className="ec-hint">
+              Pick a starter template to add to the canvas.
+            </p>
+            <div className="ec-preset-list">
+              {EMAIL_PRESETS.map((preset) => {
+                const Icon = preset.icon
+                return (
+                  <button
+                    key={preset.id}
+                    type="button"
+                    className="ec-preset-card"
+                    onClick={() => onPickPreset(preset)}
+                  >
+                    <span className="ec-preset-card__icon" aria-hidden="true">
+                      <Icon size={18} />
+                    </span>
+                    <span className="ec-preset-card__body">
+                      <span className="ec-preset-card__title">{preset.name}</span>
+                      <span className="ec-preset-card__desc">{preset.description}</span>
+                    </span>
+                  </button>
+                )
+              })}
+            </div>
+          </section>
+        ) : null}
+        {tab === 'saved' ? (
+          <section
+            id="ec-left-panel-saved"
+            className="ec-left-panel-content"
           >
-            <MousePointer2 size={16} />
-            <span>Button</span>
-          </button>
-          <button
-            type="button"
-            className="ec-palette__btn"
-            onClick={() =>
-              addBlock({ id: newBlockId(), type: 'divider', props: defaultDivider() })
-            }
-          >
-            <Minus size={16} />
-            <span>Divider</span>
-          </button>
-          <button
-            type="button"
-            className="ec-palette__btn"
-            onClick={() =>
-              addBlock({ id: newBlockId(), type: 'spacer', props: defaultSpacer() })
-            }
-          >
-            <MoveVertical size={16} />
-            <span>Spacer</span>
-          </button>
-          <button
-            type="button"
-            className="ec-palette__btn"
-            onClick={() =>
-              addBlock({
-                id: newBlockId(),
-                type: 'conditional',
-                props: defaultConditional(),
-              })
-            }
-          >
-            <GitBranch size={16} />
-            <span>Conditional</span>
-          </button>
-          <button
-            type="button"
-            className="ec-palette__btn"
-            onClick={() =>
-              addBlock({ id: newBlockId(), type: 'loop', props: defaultLoop() })
-            }
-          >
-            <Repeat size={16} />
-            <span>Loop</span>
-          </button>
-          <button
-            type="button"
-            className="ec-palette__btn"
-            onClick={() =>
-              addBlock({ id: newBlockId(), type: 'two_column', props: defaultTwoColumn() })
-            }
-          >
-            <Columns2 size={16} />
-            <span>2 Columns</span>
-          </button>
-          <button
-            type="button"
-            className="ec-palette__btn"
-            onClick={() =>
-              addBlock({ id: newBlockId(), type: 'three_column', props: defaultThreeColumn() })
-            }
-          >
-            <Columns3 size={16} />
-            <span>3 Columns</span>
-          </button>
-        </div>
-          </>
-        ) : (
-          <>
-            <h3 data-ec-h3="">Saved Blocks</h3>
-            <input
-              data-ec-input=""
-              placeholder="Search saved blocks..."
-              value={savedQuery}
-              onChange={(e) => setSavedQuery(e.target.value)}
-            />
+            <h3 data-ec-h3="">Saved Snippets</h3>
+            <label data-ec-field="">
+              <span data-ec-label="">Search saved blocks</span>
+              <input
+                data-ec-input=""
+                placeholder="Search saved snippets..."
+                value={savedQuery}
+                onChange={(e) => setSavedQuery(e.target.value)}
+              />
+            </label>
             {filteredSaved.length === 0 ? (
-              <p className="ec-muted">No saved blocks yet.</p>
+              <p className="ec-muted">No saved snippets yet.</p>
             ) : (
               filteredSaved.map((item) => (
-                <div key={item.id} className="ec-attachment-row">
+                <div key={item.id} className="ec-attachment-row ec-attachment-row--compact">
                   <strong>{item.name}</strong>
                   <div className="ec-rfield-inline" style={{ marginTop: 6 }}>
                     <button type="button" data-ec-btn="" data-ec-variant="ghost" onClick={() => onInsertSavedBlock(item)}>
@@ -215,51 +360,8 @@ export function EditorLeftPanel({
                 </div>
               ))
             )}
-          </>
-        )}
-      </div>
-      <div data-ec-sidebar-section="" className="ec-sidebar-section">
-        <h3 data-ec-h3="">Variables</h3>
-        <p className="ec-hint">Click to insert a chip in the active text block.</p>
-        {variableSchema.length === 0 ? (
-          <p className="ec-muted">No variable schema on this panel.</p>
-        ) : (
-          variableSchema.map((g) => (
-            <div key={g.group} className="ec-var-group">
-              <div className="ec-var-group__name">{g.group}</div>
-              {g.variables.map((v) => (
-                <button
-                  key={v.key}
-                  type="button"
-                  className="ec-var-pill"
-                  style={
-                    g.color
-                      ? { borderColor: g.color, color: g.color }
-                      : undefined
-                  }
-                  onClick={() => {
-                    if (!activeTextBlockId) {
-                      const firstText = work.blocks.find((b) => b.type === 'text')
-                      if (firstText) {
-                        setActiveTextBlockId(firstText.id)
-                      }
-                    }
-                    onInsertVariable({
-                      key: v.key,
-                      label: v.label,
-                      type: v.type,
-                      group: g.group,
-                      color: g.color,
-                      sample: v.sample,
-                    })
-                  }}
-                >
-                  {v.label}
-                </button>
-              ))}
-            </div>
-          ))
-        )}
+          </section>
+        ) : null}
       </div>
     </aside>
   )

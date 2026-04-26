@@ -16,7 +16,16 @@ export function ConditionalBlockView({
     <div
       className={cn('ec-block__logic', isSelected && 'ec-block__text--active')}
       data-ec-canvas=""
+      role="button"
+      tabIndex={0}
+      aria-pressed={isSelected}
       onClick={() => setSelected(blockId)}
+      onKeyDown={(e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault()
+          setSelected(blockId)
+        }
+      }}
     >
       <div className="ec-block__logic-head">Conditional</div>
       <div className="ec-block__logic-row">

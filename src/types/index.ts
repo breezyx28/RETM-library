@@ -3,6 +3,9 @@ export type {
   VariableGroup,
   VariableSchema,
   VariableType,
+  VariableRenderAs,
+  VariableSampleValue,
+  VariableTableSample,
 } from './schema'
 
 export type {

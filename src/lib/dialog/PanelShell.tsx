@@ -1,10 +1,14 @@
-import type { ReactNode } from 'react'
+import type { CSSProperties, ReactNode } from 'react'
 import * as Dialog from '@radix-ui/react-dialog'
 import { X } from 'lucide-react'
 import { useControlledOpen } from './useControlledOpen'
+import type { ThemeName, ThemeOverride } from '../../types'
 
 export interface PanelShellProps {
   asDialog?: boolean
+  headless?: boolean
+  theme?: ThemeName
+  themeOverride?: ThemeOverride
   open?: boolean
   defaultOpen?: boolean
   onOpenChange?: (open: boolean) => void
@@ -26,6 +30,9 @@ export interface PanelShellProps {
 export function PanelShell(props: PanelShellProps) {
   const {
     asDialog = true,
+    headless = false,
+    theme = 'default',
+    themeOverride,
     open: controlledOpen,
     defaultOpen,
     onOpenChange,
@@ -54,9 +61,12 @@ export function PanelShell(props: PanelShellProps) {
       <Dialog.Portal>
         <Dialog.Overlay data-ec-overlay="" />
         <Dialog.Content
+          className={headless ? undefined : 'retm-library-root'}
           data-ec-shell=""
           data-ec-mode="dialog"
+          data-ec-theme={headless ? undefined : theme}
           aria-describedby={undefined}
+          style={themeOverride as CSSProperties | undefined}
           onOpenAutoFocus={(e) => {
             // Avoid auto-focusing the close button: let the library view take
             // focus instead for a calmer first paint.
