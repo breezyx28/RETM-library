@@ -337,7 +337,7 @@ export function EditorFormatBar({ getActiveEditor, readOnly = false }: EditorFor
                 ? 'Paste the image address. It must be a non-empty URL.'
                 : 'Paste a web address, or clear the field to remove the link from the selection.'}
             </AlertDialog.Description>
-            <label data-ec-field="" style={{ display: 'block', marginTop: 8 }}>
+            <label data-ec-field="" className="ec-fmtbar__url-field">
               <span data-ec-label="">URL</span>
               <input
                 data-ec-input=""

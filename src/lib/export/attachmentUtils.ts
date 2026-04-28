@@ -28,7 +28,23 @@ function extFromUrl(url: string): string {
   return clean.slice(dot + 1).toLowerCase()
 }
 
-export function classifyAttachment(url: string): AttachmentRenderHint {
+export function classifyAttachment(
+  url: string,
+  forcedKind: AttachmentItem['kind'] = 'auto',
+): AttachmentRenderHint {
+  if (forcedKind && forcedKind !== 'auto') {
+    if (forcedKind === 'pdf') return { kind: 'pdf', download: true, fallbackLabel: 'Open PDF' }
+    if (forcedKind === 'image') return { kind: 'image', download: false, fallbackLabel: 'Open Image' }
+    if (forcedKind === 'video') return { kind: 'video', download: false, fallbackLabel: 'Watch Video' }
+    if (forcedKind === 'archive') {
+      return { kind: 'archive', download: true, fallbackLabel: 'Download Archive' }
+    }
+    if (forcedKind === 'spreadsheet') {
+      return { kind: 'spreadsheet', download: true, fallbackLabel: 'Download Spreadsheet' }
+    }
+    if (forcedKind === 'csv') return { kind: 'csv', download: true, fallbackLabel: 'Download CSV' }
+    return { kind: 'link', download: false, fallbackLabel: 'Open Link' }
+  }
   const ext = extFromUrl(url)
   if (ext === 'pdf') {
     return { kind: 'pdf', download: true, fallbackLabel: 'Open PDF' }

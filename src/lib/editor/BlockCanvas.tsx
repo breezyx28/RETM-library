@@ -4,6 +4,8 @@ import { TextBlockEditor } from './blocks/TextBlockEditor'
 import { ConditionalBlockView } from './blocks/ConditionalBlockView'
 import { LoopBlockView } from './blocks/LoopBlockView'
 import { EditorFormatBar } from './EditorFormatBar'
+import { resolveAttachmentFileVisual } from './attachmentFileIcons'
+import { usePanelStore } from '../store'
 
 export interface BlockCanvasProps {
   work: EditorDocumentV1
@@ -22,6 +24,7 @@ export function BlockCanvas({
   onSaveReusableBlock,
   getActiveEditor,
 }: BlockCanvasProps) {
+  const selectedBlockId = usePanelStore((s) => s.selectedBlockId)
   const canvasBlocks = work.blocks.filter(
     (block) =>
       block.type !== 'image' &&
@@ -42,6 +45,8 @@ export function BlockCanvas({
       return { ...b, props: { doc } }
     })
   }
+  const reusableTarget =
+    canvasBlocks.find((block) => block.id === selectedBlockId) ?? canvasBlocks[0] ?? null
 
   return (
     <div data-ec-canvas-outer="" className="ec-canvas-outer">
@@ -94,22 +99,48 @@ export function BlockCanvas({
                 </div>
               </div>
             )}
-            {onSaveReusableBlock ? (
-              <div className="ec-rfield-inline" style={{ marginTop: 8 }}>
-                <button
-                  type="button"
-                  data-ec-btn=""
-                  data-ec-variant="ghost"
-                  disabled={readOnly}
-                  onClick={() => onSaveReusableBlock(block)}
-                >
-                  Save as reusable
-                </button>
-              </div>
-            ) : null}
           </div>
         ))}
+        {work.attachments.length > 0 ? (
+          <div className="ec-canvas-attachments" data-ec-canvas-attachments="">
+            {work.attachments.map((attachment) => {
+              const visual = resolveAttachmentFileVisual(attachment.url)
+              return (
+              <div key={attachment.id} className="ec-canvas-attachment-card">
+                <span
+                  className="ec-canvas-attachment-card__badge"
+                  data-ec-tone={visual.tone}
+                >
+                  <img src={visual.iconSrc} alt="" aria-hidden="true" />
+                </span>
+                <div className="ec-canvas-attachment-card__meta">
+                  <strong>{attachment.label || 'Attachment'}</strong>
+                  <span>
+                    {visual.extensionLabel}
+                    {attachment.size?.trim() ? ` · ${attachment.size.trim()}` : ''}
+                  </span>
+                </div>
+              </div>
+              )
+            })}
+          </div>
+        ) : null}
       </div>
+      {onSaveReusableBlock ? (
+        <div className="ec-canvas-floating-actions">
+          <button
+            type="button"
+            data-ec-btn=""
+            data-ec-variant="ghost"
+            disabled={readOnly || !reusableTarget}
+            onClick={() => {
+              if (reusableTarget) onSaveReusableBlock(reusableTarget)
+            }}
+          >
+            Save as reusable
+          </button>
+        </div>
+      ) : null}
     </div>
   )
 }

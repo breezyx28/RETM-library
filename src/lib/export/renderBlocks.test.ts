@@ -292,8 +292,8 @@ describe('renderAttachments', () => {
   it('renders file and image attachments with smart behavior', () => {
     const html = renderAttachments(
       [
-        { id: 'a1', label: 'Invoice', url: 'https://x/invoice.pdf', style: 'link', kind: 'auto' },
-        { id: 'a2', label: 'Gallery', url: '{{imageUrl}}', style: 'button', kind: 'auto' },
+        { id: 'a1', label: 'Invoice', url: 'https://x/invoice.pdf', type: 'file', kind: 'auto' },
+        { id: 'a2', label: 'Gallery', url: '{{imageUrl}}', type: 'button', kind: 'auto' },
       ],
       ctx,
     )

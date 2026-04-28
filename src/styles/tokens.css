@@ -7,25 +7,25 @@
 
 .retm-library-root {
   /* Color — base palette */
-  --ec-primary: #000000;
-  --ec-primary-hover: #1f1f1f;
-  --ec-primary-soft: rgba(0, 0, 0, 0.08);
-  --ec-accent: #000000;
+  --ec-primary: #1f2937;
+  --ec-primary-hover: #111827;
+  --ec-primary-soft: rgba(31, 41, 55, 0.1);
+  --ec-accent: #1f2937;
 
-  --ec-bg: #ffffff;
-  --ec-bg-secondary: #f7f7f7;
-  --ec-bg-tertiary: #efefef;
-  --ec-bg-overlay: rgba(0, 0, 0, 0.5);
+  --ec-bg: #f7f7f8;
+  --ec-bg-secondary: #f1f2f4;
+  --ec-bg-tertiary: #e9ebef;
+  --ec-bg-overlay: rgba(15, 23, 42, 0.38);
 
-  --ec-border: #dddddd;
-  --ec-border-strong: #bdbdbd;
-  --ec-ring: rgba(0, 0, 0, 0.18);
-  --ec-focus-outline: 2px dashed #000000;
+  --ec-border: #e2e4e9;
+  --ec-border-strong: #ced2da;
+  --ec-ring: rgba(71, 85, 105, 0.22);
+  --ec-focus-outline: 2px solid #5b6472;
   --ec-focus-offset: 2px;
 
-  --ec-text: #111111;
-  --ec-text-secondary: #4a4a4a;
-  --ec-text-muted: #666666;
+  --ec-text: #1f2631;
+  --ec-text-secondary: #596171;
+  --ec-text-muted: #747d8c;
   --ec-text-inverse: #ffffff;
 
   --ec-danger: #a81717;
@@ -43,41 +43,41 @@
   --ec-font-mono:
     'Fira Code', ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
 
-  --ec-text-xs: 12px;
-  --ec-text-sm: 14px;
+  --ec-text-xs: 11px;
+  --ec-text-sm: 12px;
   --ec-text-md: 14px;
   --ec-text-lg: 17px;
-  --ec-text-xl: 20px;
-  --ec-text-2xl: 26px;
-  --ec-text-3xl: 32px;
+  --ec-text-xl: 21px;
+  --ec-text-2xl: 30px;
+  --ec-text-3xl: 36px;
 
   /* Spacing scale (4-based) */
   --ec-space-1: 4px;
   --ec-space-2: 8px;
   --ec-space-3: 12px;
   --ec-space-4: 16px;
-  --ec-space-5: 22px;
+  --ec-space-5: 20px;
   --ec-space-6: 24px;
   --ec-space-8: 32px;
   --ec-space-10: 40px;
   --ec-space-12: 48px;
 
   /* Radii */
-  --ec-radius-sm: 6px;
-  --ec-radius: 10px;
-  --ec-radius-lg: 14px;
-  --ec-radius-xl: 18px;
+  --ec-radius-sm: 8px;
+  --ec-radius: 11px;
+  --ec-radius-lg: 15px;
+  --ec-radius-xl: 20px;
   --ec-radius-pill: 999px;
   --ec-radius-full: 999px;
 
   /* Shadows */
-  --ec-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
-  --ec-shadow: 0 8px 22px -16px rgba(0, 0, 0, 0.24);
+  --ec-shadow-sm: 0 1px 2px rgba(15, 23, 42, 0.06);
+  --ec-shadow: 0 14px 30px -22px rgba(15, 23, 42, 0.22);
   --ec-shadow-md:
-    0 14px 30px -18px rgba(0, 0, 0, 0.3), 0 1px 2px rgba(0, 0, 0, 0.05);
+    0 20px 44px -30px rgba(15, 23, 42, 0.28), 0 3px 12px -10px rgba(15, 23, 42, 0.15);
   --ec-shadow-lg:
-    0 34px 64px -24px rgba(0, 0, 0, 0.38),
-    0 10px 20px -8px rgba(0, 0, 0, 0.16);
+    0 40px 80px -34px rgba(15, 23, 42, 0.36),
+    0 16px 30px -16px rgba(15, 23, 42, 0.16);
 
   /* Motion */
   --ec-duration-fast: 120ms;
@@ -112,25 +112,25 @@
   [data-ec-alertdialog],
   [data-ec-dialog]
 ) {
-  --ec-primary: #000000;
-  --ec-primary-hover: #1f1f1f;
-  --ec-primary-soft: rgba(0, 0, 0, 0.08);
-  --ec-accent: #000000;
+  --ec-primary: #1f2937;
+  --ec-primary-hover: #111827;
+  --ec-primary-soft: rgba(31, 41, 55, 0.1);
+  --ec-accent: #1f2937;
 
-  --ec-bg: #ffffff;
-  --ec-bg-secondary: #f7f7f7;
-  --ec-bg-tertiary: #efefef;
-  --ec-bg-overlay: rgba(0, 0, 0, 0.5);
+  --ec-bg: #f7f7f8;
+  --ec-bg-secondary: #f1f2f4;
+  --ec-bg-tertiary: #e9ebef;
+  --ec-bg-overlay: rgba(15, 23, 42, 0.38);
 
-  --ec-border: #dddddd;
-  --ec-border-strong: #bdbdbd;
-  --ec-ring: rgba(0, 0, 0, 0.18);
-  --ec-focus-outline: 2px dashed #000000;
+  --ec-border: #e2e4e9;
+  --ec-border-strong: #ced2da;
+  --ec-ring: rgba(71, 85, 105, 0.22);
+  --ec-focus-outline: 2px solid #5b6472;
   --ec-focus-offset: 2px;
 
-  --ec-text: #111111;
-  --ec-text-secondary: #4a4a4a;
-  --ec-text-muted: #666666;
+  --ec-text: #1f2631;
+  --ec-text-secondary: #596171;
+  --ec-text-muted: #747d8c;
   --ec-text-inverse: #ffffff;
 
   --ec-danger: #a81717;
@@ -147,38 +147,38 @@
   --ec-font-mono:
     'Fira Code', ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
 
-  --ec-text-xs: 12px;
-  --ec-text-sm: 14px;
+  --ec-text-xs: 11px;
+  --ec-text-sm: 12px;
   --ec-text-md: 14px;
   --ec-text-lg: 17px;
-  --ec-text-xl: 20px;
-  --ec-text-2xl: 26px;
-  --ec-text-3xl: 32px;
+  --ec-text-xl: 21px;
+  --ec-text-2xl: 30px;
+  --ec-text-3xl: 36px;
 
   --ec-space-1: 4px;
   --ec-space-2: 8px;
   --ec-space-3: 12px;
   --ec-space-4: 16px;
-  --ec-space-5: 22px;
+  --ec-space-5: 20px;
   --ec-space-6: 24px;
   --ec-space-8: 32px;
   --ec-space-10: 40px;
   --ec-space-12: 48px;
 
-  --ec-radius-sm: 6px;
-  --ec-radius: 10px;
-  --ec-radius-lg: 14px;
-  --ec-radius-xl: 18px;
+  --ec-radius-sm: 8px;
+  --ec-radius: 11px;
+  --ec-radius-lg: 15px;
+  --ec-radius-xl: 20px;
   --ec-radius-pill: 999px;
   --ec-radius-full: 999px;
 
-  --ec-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
-  --ec-shadow: 0 8px 22px -16px rgba(0, 0, 0, 0.24);
+  --ec-shadow-sm: 0 1px 2px rgba(15, 23, 42, 0.06);
+  --ec-shadow: 0 14px 30px -22px rgba(15, 23, 42, 0.22);
   --ec-shadow-md:
-    0 14px 30px -18px rgba(0, 0, 0, 0.3), 0 1px 2px rgba(0, 0, 0, 0.05);
+    0 20px 44px -30px rgba(15, 23, 42, 0.28), 0 3px 12px -10px rgba(15, 23, 42, 0.15);
   --ec-shadow-lg:
-    0 34px 64px -24px rgba(0, 0, 0, 0.38),
-    0 10px 20px -8px rgba(0, 0, 0, 0.16);
+    0 40px 80px -34px rgba(15, 23, 42, 0.36),
+    0 16px 30px -16px rgba(15, 23, 42, 0.16);
 
   --ec-duration-fast: 120ms;
   --ec-duration: 180ms;

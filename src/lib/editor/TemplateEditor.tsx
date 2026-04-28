@@ -203,6 +203,16 @@ export function TemplateEditor() {
     [panelStore, setActiveTextBlockId, setSelectedBlockId, work.blocks],
   )
 
+  const appendAttachmentToCanvasBottom = useCallback((attachment: EditorDocumentV1['attachments'][number]) => {
+    setWork((prev) => ({
+      ...prev,
+      attachments: [
+        ...prev.attachments.filter((item) => item.id !== attachment.id),
+        attachment,
+      ],
+    }))
+  }, [])
+
   const applyPreset = useCallback(
     (preset: EmailPreset, mode: 'cursor' | 'replace') => {
       if (mode === 'cursor') {
@@ -509,6 +519,7 @@ export function TemplateEditor() {
   return (
     <div data-ec-template-editor="" className="ec-template-editor">
       <EditorToolbar
+        templateName={name}
         onBack={backToLibrary}
         onSave={save}
         onPreview={handlePreview}
@@ -520,6 +531,7 @@ export function TemplateEditor() {
         readOnly={readOnly}
         saving={saving}
       />
+      <div className="ec-editor-shell">
       <div className="ec-editor-grid">
         <EditorLeftPanel
           work={work}
@@ -604,7 +616,9 @@ export function TemplateEditor() {
           }}
           diffLeftHtml={compareLeft?.html ?? ''}
           diffRightHtml={compareRight?.html ?? ''}
+          onAppendAttachmentToCanvas={appendAttachmentToCanvasBottom}
         />
+      </div>
       </div>
       {previewOpen ? (
         <div className="ec-preview-modal" role="dialog" aria-modal="true">
@@ -705,10 +719,10 @@ export function TemplateEditor() {
               <>
                 <input
                   data-ec-input=""
+                  className="ec-preview-modal__test-input"
                   placeholder="test@company.com"
                   value={testRecipient}
                   onChange={(e) => setTestRecipient(e.target.value)}
-                  style={{ maxWidth: 220 }}
                 />
                 <button
                   type="button"

@@ -8,14 +8,15 @@ export const EDITOR_DOC_VERSION = 1 as const
  */
 export type TiptapDocJson = JSONContent
 
-export type AttachmentStyle = 'link' | 'button'
+export type AttachmentType = 'file' | 'link' | 'button'
 
 export interface AttachmentItem {
   id: string
   label: string
   url: string
-  style: AttachmentStyle
+  type: AttachmentType
   kind?: 'auto' | 'pdf' | 'image' | 'video' | 'archive' | 'spreadsheet' | 'csv' | 'link'
+  size?: string
 }
 
 export interface TextBlockProps {
@@ -483,8 +484,9 @@ export function defaultAttachment(): AttachmentItem {
     id: newAttachmentId(),
     label: 'Attachment',
     url: '',
-    style: 'link',
+    type: 'file',
     kind: 'auto',
+    size: '',
   }
 }
 
@@ -494,6 +496,7 @@ function sanitizeAttachments(raw: unknown): AttachmentItem[] {
     .map((item) => {
       if (!item || typeof item !== 'object') return null
       const rec = item as Partial<AttachmentItem>
+      const legacyStyle = (item as { style?: unknown }).style
       return {
         id:
           typeof rec.id === 'string' && rec.id
@@ -501,8 +504,16 @@ function sanitizeAttachments(raw: unknown): AttachmentItem[] {
             : newAttachmentId(),
         label: typeof rec.label === 'string' ? rec.label : 'Attachment',
         url: typeof rec.url === 'string' ? rec.url : '',
-        style: rec.style === 'button' ? 'button' : 'link',
+        type:
+          rec.type === 'button' || rec.type === 'link' || rec.type === 'file'
+            ? rec.type
+            : legacyStyle === 'button'
+              ? 'button'
+              : legacyStyle === 'link'
+                ? 'link'
+                : 'file',
         kind: rec.kind ?? 'auto',
+        size: typeof rec.size === 'string' ? rec.size : '',
       } as AttachmentItem
     })
     .filter(Boolean) as AttachmentItem[]

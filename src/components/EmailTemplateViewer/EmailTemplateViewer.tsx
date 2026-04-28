@@ -15,6 +15,7 @@ import { formatRelative } from '../../lib/utils/date'
 import { exportTemplate, htmlToPlainText } from '../../lib/export'
 import { migrateEditorJson } from '../../lib/types/editorDocument'
 import { EC_LOCAL_TEMPLATES_CHANGED } from '../../lib/storage/localTemplateEvents'
+import { resolveAttachmentFileVisual } from '../../lib/editor/attachmentFileIcons'
 
 type ViewerTab = 'preview' | 'code' | 'plain'
 
@@ -178,6 +179,12 @@ export function EmailTemplateViewer(props: EmailTemplateViewerProps) {
   const iframeHtml = resolved.iframeHtml
   const codeSource = resolved.codeHtml
   const plainBody = resolved.plainText
+  const viewerAttachments = useMemo(() => {
+    if (!activeTemplate) return []
+    const variant = activeTemplate.languages[selectedLanguage]
+    if (!variant?.editorJson) return []
+    return migrateEditorJson(variant.editorJson).attachments
+  }, [activeTemplate, selectedLanguage])
 
   const allTags = useMemo(() => {
     const tags = new Set<string>()
@@ -481,16 +488,46 @@ export function EmailTemplateViewer(props: EmailTemplateViewerProps) {
 
             {tab === 'preview' ? (
               <div data-ec-viewer-preview="">
-                <iframe
-                  title="Template preview"
-                  sandbox="allow-same-origin"
-                  srcDoc={
-                    iframeHtml ||
-                    '<p style="font-family:Arial,sans-serif;padding:16px;">No HTML to preview.</p>'
-                  }
-                  data-ec-viewer-frame=""
-                  style={{ width: viewport === 'mobile' ? 'min(375px, 100%)' : '100%' }}
-                />
+                <div className="ec-viewer-preview-stack">
+                  <div className="ec-viewer-frame-shell" style={{ width: viewport === 'mobile' ? 'min(375px, 100%)' : '100%' }}>
+                    <iframe
+                      title="Template preview"
+                      sandbox="allow-same-origin"
+                      srcDoc={
+                        iframeHtml ||
+                        '<p style="font-family:Arial,sans-serif;padding:16px;">No HTML to preview.</p>'
+                      }
+                      data-ec-viewer-frame=""
+                    />
+                    {viewerAttachments.length > 0 ? (
+                      <div className="ec-viewer-attachments" data-ec-canvas-attachments="">
+                        {viewerAttachments.map((attachment) => {
+                          const visual = resolveAttachmentFileVisual(attachment.url)
+                          return (
+                            <a
+                              key={attachment.id}
+                              href={attachment.url}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="ec-canvas-attachment-card"
+                            >
+                              <span className="ec-canvas-attachment-card__badge" data-ec-tone={visual.tone}>
+                                <img src={visual.iconSrc} alt="" aria-hidden="true" />
+                              </span>
+                              <span className="ec-canvas-attachment-card__meta">
+                                <strong>{attachment.label || 'Attachment'}</strong>
+                                <span>
+                                  {visual.extensionLabel}
+                                  {attachment.size?.trim() ? ` · ${attachment.size.trim()}` : ''}
+                                </span>
+                              </span>
+                            </a>
+                          )
+                        })}
+                      </div>
+                    ) : null}
+                  </div>
+                </div>
               </div>
             ) : tab === 'code' ? (
               <div data-ec-viewer-code-wrap="">

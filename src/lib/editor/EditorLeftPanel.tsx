@@ -1,5 +1,5 @@
 import { Variable, FolderSearch, MoreVertical, Mail } from 'lucide-react'
-import { useMemo, useState, type CSSProperties } from 'react'
+import { useMemo, useState } from 'react'
 import * as DropdownMenu from '@radix-ui/react-dropdown-menu'
 import { usePanelConfig, type FlatVariable } from '../context/PanelConfigContext'
 import { usePanelStore } from '../store'
@@ -66,21 +66,24 @@ export function EditorLeftPanel({
       data-ec-sidebar-left=""
       className="ec-sidebar"
     >
+      <div className="ec-left-nav-head">
+        <p className="ec-left-nav-title">Templates Editor</p>
+      </div>
       <div data-ec-sidebar-section="" className="ec-sidebar-section ec-sidebar-section--compact">
         <div className="ec-left-tabs" aria-label="Editor insertion options">
           <button
             type="button"
-            className="ec-left-tab"
+            className="ec-left-tab ec-left-nav-item"
             aria-pressed={tab === 'variables'}
             onClick={() => setTab('variables')}
             title="Variables"
           >
             <Variable size={14} />
-            <span>Variables</span>
+            <span>My Templates</span>
           </button>
           <button
             type="button"
-            className="ec-left-tab"
+            className="ec-left-tab ec-left-nav-item"
             aria-pressed={tab === 'templates'}
             onClick={() => setTab('templates')}
             title="Templates"
@@ -90,7 +93,7 @@ export function EditorLeftPanel({
           </button>
           <button
             type="button"
-            className="ec-left-tab"
+            className="ec-left-tab ec-left-nav-item"
             aria-pressed={tab === 'saved'}
             onClick={() => setTab('saved')}
             title="Saved"
@@ -116,11 +119,6 @@ export function EditorLeftPanel({
                     <div
                       key={v.key}
                       className="ec-var-pill-wrap"
-                      style={
-                        g.color
-                          ? ({ ['--ec-pill-tint' as string]: g.color } as CSSProperties)
-                          : undefined
-                      }
                     >
                       <button
                         type="button"
@@ -349,7 +347,7 @@ export function EditorLeftPanel({
               filteredSaved.map((item) => (
                 <div key={item.id} className="ec-attachment-row ec-attachment-row--compact">
                   <strong>{item.name}</strong>
-                  <div className="ec-rfield-inline" style={{ marginTop: 6 }}>
+                  <div className="ec-rfield-inline ec-saved-actions">
                     <button type="button" data-ec-btn="" data-ec-variant="ghost" onClick={() => onInsertSavedBlock(item)}>
                       Insert
                     </button>

@@ -347,11 +347,11 @@ function renderAttachment(item: AttachmentItem, ctx: RenderContext): string {
       ? hydrateAttachmentUrl(item.url, ctx.sampleData)
       : item.url
   if (!hydratedUrl.trim()) return ''
-  const hint = classifyAttachment(hydratedUrl)
+  const hint = classifyAttachment(hydratedUrl, item.kind)
   const label = he.escape(attachmentDisplayLabel(item, hint))
   const href = he.escape(hydratedUrl)
   const buttonStyle =
-    item.style === 'button'
+    item.type === 'button'
       ? 'display:inline-block;padding:10px 14px;background:#1f2937;color:#fff;border-radius:6px;text-decoration:none;font-size:13px;font-weight:600;'
       : 'color:#1d4ed8;text-decoration:underline;font-size:14px;'
   const downloadAttr = hint.download ? ' download' : ''
@@ -366,8 +366,48 @@ function renderAttachment(item: AttachmentItem, ctx: RenderContext): string {
     )}>${label || 'Watch Video'}</a></td></tr>`
   }
 
+  if (item.type === 'file') {
+    const badge =
+      hint.kind === 'pdf'
+        ? 'PDF'
+        : hint.kind === 'spreadsheet'
+          ? 'XLS'
+          : hint.kind === 'csv'
+            ? 'CSV'
+            : hint.kind === 'archive'
+              ? 'ZIP'
+              : 'URL'
+    const subtitle =
+      hint.kind === 'pdf'
+        ? 'PDF file'
+        : hint.kind === 'spreadsheet'
+          ? 'Spreadsheet file'
+          : hint.kind === 'csv'
+            ? 'CSV file'
+            : hint.kind === 'archive'
+              ? 'Archive file'
+              : 'Link'
+    return `<tr><td${styleAttr('padding:0 0 12px;')}><a href="${href}" target="_blank" rel="noopener noreferrer"${downloadAttr}${styleAttr(
+      'display:flex;align-items:center;gap:10px;padding:10px 12px;border:1px solid #e5e7eb;border-radius:12px;background:#f8fafc;text-decoration:none;color:#111827;',
+    )}><span${styleAttr(
+      'display:inline-flex;align-items:center;justify-content:center;min-width:44px;height:36px;border-radius:9px;background:#ffffff;border:1px solid #d1d5db;font-size:11px;font-weight:700;color:#374151;',
+    )}>${badge}</span><span${styleAttr(
+      'display:flex;flex-direction:column;line-height:1.25;',
+    )}><strong${styleAttr(
+      'font-size:14px;font-weight:600;color:#111827;',
+    )}>${label}</strong><span${styleAttr(
+      'font-size:12px;color:#6b7280;',
+    )}>${subtitle}</span></span></a></td></tr>`
+  }
+
+  if (item.type === 'link') {
+    return `<tr><td${styleAttr('padding:0 0 12px;')}><a href="${href}" target="_blank" rel="noopener noreferrer"${downloadAttr}${styleAttr(
+      'color:#1d4ed8;text-decoration:underline;font-size:14px;',
+    )}>${label}</a></td></tr>`
+  }
+
   return `<tr><td${styleAttr('padding:0 0 12px;')}><a href="${href}" target="_blank" rel="noopener noreferrer"${downloadAttr}${styleAttr(
-    buttonStyle,
+    'display:inline-block;padding:10px 14px;background:#1f2937;color:#fff;border-radius:6px;text-decoration:none;font-size:13px;font-weight:600;',
   )}>${label}</a></td></tr>`
 }
 
