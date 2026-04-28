@@ -1,6 +1,7 @@
-import { Mail } from 'lucide-react'
+import { File, Paperclip } from 'lucide-react'
 import type { Template } from '../../types'
 import { formatRelative } from '../utils/date'
+import { migrateEditorJson } from '../types/editorDocument'
 import { StatusBadge } from './StatusBadge'
 import { TemplateCardMenu } from './TemplateCardMenu'
 
@@ -34,26 +35,32 @@ export function TemplateCard({
   canMoveFolder = false,
 }: TemplateCardProps) {
   const languages = Object.keys(template.languages)
+  const hasAttachments = Object.values(template.languages).some((variant) => {
+    try {
+      return migrateEditorJson(variant.editorJson).attachments.length > 0
+    } catch {
+      return false
+    }
+  })
 
   return (
     <article data-ec-card="" data-ec-card-status={template.status}>
-      <button
-        type="button"
+      <div
         data-ec-card-thumb=""
+        role="button"
+        tabIndex={0}
         onClick={canEdit ? onEdit : onPreview}
+        onKeyDown={(e) => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault()
+            if (canEdit) onEdit()
+            else onPreview()
+          }
+        }}
         aria-label={`${canEdit ? 'Edit' : 'Preview'} ${template.name}`}
       >
-        {thumbnailHtml ? (
-          <iframe
-            title={`${template.name} thumbnail`}
-            srcDoc={thumbnailHtml}
-            style={{ width: '100%', height: '100%', border: 0, pointerEvents: 'none' }}
-            sandbox="allow-same-origin"
-          />
-        ) : (
-          <Mail size={28} aria-hidden="true" />
-        )}
-      </button>
+        <File size={34} aria-hidden="true" />
+      </div>
 
       <div data-ec-card-body="">
         <div data-ec-card-head="">
@@ -75,6 +82,11 @@ export function TemplateCard({
         </div>
         <div data-ec-card-meta="">
           <StatusBadge status={template.status} />
+          {hasAttachments ? (
+            <span data-ec-card-attachment="" title="Has attachments" aria-label="Has attachments">
+              <Paperclip size={14} aria-hidden="true" />
+            </span>
+          ) : null}
           <span data-ec-card-dot="" aria-hidden="true">
             ·
           </span>

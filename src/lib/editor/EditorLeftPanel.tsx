@@ -1,4 +1,4 @@
-import { Variable, FolderSearch, MoreVertical, Mail } from 'lucide-react'
+import { Variable, FolderSearch, MoreVertical, Mail, FileText } from 'lucide-react'
 import { useMemo, useState } from 'react'
 import * as DropdownMenu from '@radix-ui/react-dropdown-menu'
 import { usePanelConfig, type FlatVariable } from '../context/PanelConfigContext'
@@ -6,6 +6,7 @@ import { usePanelStore } from '../store'
 import type { EditorDocumentV1 } from '../types/editorDocument'
 import type { SavedBlock } from '../types/savedBlock'
 import { EMAIL_PRESETS, type EmailPreset } from './presets/emailPresets'
+import { formatRelative } from '../utils/date'
 
 export function EditorLeftPanel({
   work,
@@ -345,8 +346,33 @@ export function EditorLeftPanel({
               <p className="ec-muted">No saved snippets yet.</p>
             ) : (
               filteredSaved.map((item) => (
-                <div key={item.id} className="ec-attachment-row ec-attachment-row--compact">
-                  <strong>{item.name}</strong>
+                <article key={item.id} className="ec-saved-card ec-attachment-row ec-attachment-row--compact">
+                  <div className="ec-saved-card__head">
+                    <span className="ec-saved-card__icon" aria-hidden="true">
+                      <FileText size={14} />
+                    </span>
+                    <div className="ec-saved-card__title-wrap">
+                      <strong className="ec-saved-card__title">{item.name}</strong>
+                      <span className="ec-saved-card__desc">
+                        {item.snapshot.type.replaceAll('_', ' ')} block
+                      </span>
+                    </div>
+                  </div>
+                  <div className="ec-saved-card__meta">
+                    <span className="ec-saved-card__meta-item" data-ec-tone="visibility">
+                      {item.visibility}
+                    </span>
+                    <span className="ec-saved-card__meta-item" data-ec-tone="date">
+                      {formatRelative(item.createdAt)}
+                    </span>
+                  </div>
+                  <div className="ec-saved-card__tags" aria-label="Snippet tags">
+                    {(item.tags?.length ? item.tags.slice(0, 3) : ['template']).map((tag) => (
+                      <span key={`${item.id}-${tag}`} className="ec-saved-card__tag">
+                        {tag}
+                      </span>
+                    ))}
+                  </div>
                   <div className="ec-rfield-inline ec-saved-actions">
                     <button type="button" data-ec-btn="" data-ec-variant="ghost" onClick={() => onInsertSavedBlock(item)}>
                       Insert
@@ -355,7 +381,7 @@ export function EditorLeftPanel({
                       Delete
                     </button>
                   </div>
-                </div>
+                </article>
               ))
             )}
           </section>
