@@ -1,4 +1,4 @@
-import { File, Paperclip } from 'lucide-react'
+import { Download, File, Paperclip } from 'lucide-react'
 import type { Template } from '../../types'
 import { formatRelative } from '../utils/date'
 import { migrateEditorJson } from '../types/editorDocument'
@@ -105,6 +105,19 @@ export function TemplateCard({
               {code.toUpperCase()}
             </span>
           ))}
+        </div>
+        <div data-ec-card-actions="">
+          <button
+            type="button"
+            data-ec-btn=""
+            data-ec-variant="ghost"
+            onClick={onExportHtml}
+            aria-label={`Download ${template.name} as HTML`}
+            title="Download HTML"
+          >
+            <Download size={14} aria-hidden="true" />
+            Download HTML
+          </button>
         </div>
       </div>
     </article>

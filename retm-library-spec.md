@@ -1063,7 +1063,7 @@ Minimum body font size is **14px** — the editor warns if a text block is set s
 - [ ] Headless mode (`headless={true}`) with full `data-ec-*` attribute coverage
 - [ ] Approval workflow activation (`publishMode="approval"`)
 - [ ] Diff view in version history
-- [ ] WCAG contrast checker in editor
+- [ ] WCAG contrast checker in editor.
 
 ---
 

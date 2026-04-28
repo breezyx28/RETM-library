@@ -81,7 +81,7 @@ export function TemplateCardMenu(props: TemplateCardMenuProps) {
 
           <DropdownMenu.Item data-ec-menu-item="" onSelect={onExportHtml}>
             <Download size={14} aria-hidden="true" />
-            <span>Export HTML</span>
+            <span>Download HTML</span>
           </DropdownMenu.Item>
 
           <DropdownMenu.Separator data-ec-menu-separator="" />

@@ -326,6 +326,12 @@
   flex-wrap: wrap;
 }
 
+[data-ec-card-actions] {
+  margin-top: 8px;
+  display: flex;
+  justify-content: flex-end;
+}
+
 [data-ec-lang-pill] {
   display: inline-block;
   padding: 3px 8px;
