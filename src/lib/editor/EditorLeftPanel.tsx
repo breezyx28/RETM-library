@@ -354,7 +354,7 @@ export function EditorLeftPanel({
                     <div className="ec-saved-card__title-wrap">
                       <strong className="ec-saved-card__title">{item.name}</strong>
                       <span className="ec-saved-card__desc">
-                        {item.snapshot.type.replaceAll('_', ' ')} block
+                        {item.snapshot.type.replace(/_/g, ' ')} block
                       </span>
                     </div>
                   </div>
