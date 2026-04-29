@@ -37,6 +37,11 @@ jobs:
       - name: Bump patch version
         run: npm version patch --no-git-tag-version
 
+      - name: Verify npm auth
+        run: npm whoami
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
       - name: Publish package
         run: npm publish --access public
         env:
