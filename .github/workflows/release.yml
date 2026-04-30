@@ -23,50 +23,9 @@ jobs:
         with:
           node-version: 22
           cache: npm
-          registry-url: https://registry.npmjs.org
-          always-auth: true
 
       - name: Install
         run: npm ci
 
       - name: Validate
         run: npm run typecheck && npm run test && npm run build
-
-      - name: Verify npm auth
-        id: npm_auth
-        run: npm whoami
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-
-      - name: Verify publish permission on package
-        run: |
-          PKG_NAME=$(node -p "require('./package.json').name")
-          echo "Checking owners for ${PKG_NAME}"
-          npm owner ls "${PKG_NAME}"
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-
-      - name: Compute next npm version (auto patch)
-        id: next_version
-        run: |
-          PKG_NAME=$(node -p "require('./package.json').name")
-          CURRENT_LOCAL=$(node -p "require('./package.json').version")
-          LATEST_PUBLISHED=$(npm view "${PKG_NAME}" version 2>/dev/null || echo "0.0.0")
-
-          NEXT_VERSION=$(node -e "const toArr=(v)=>v.split('.').map((n)=>Number(n)||0); const cmp=(a,b)=>{for(let i=0;i<3;i++){if(a[i]>b[i]) return 1; if(a[i]<b[i]) return -1;} return 0}; const local=toArr('${CURRENT_LOCAL}'); const latest=toArr('${LATEST_PUBLISHED}'); const base=cmp(local,latest)===1?local:latest; base[2]+=1; process.stdout.write(base.join('.'));")
-
-          echo "value=${NEXT_VERSION}" >> "$GITHUB_OUTPUT"
-          echo "package=${PKG_NAME}" >> "$GITHUB_OUTPUT"
-          echo "Latest npm: ${LATEST_PUBLISHED}"
-          echo "Local package.json: ${CURRENT_LOCAL}"
-          echo "Publishing next version: ${NEXT_VERSION}"
-
-      - name: Apply computed version for publish
-        run: npm version ${{ steps.next_version.outputs.value }} --no-git-tag-version
-
-      - name: Publish package
-        run: |
-          echo "Publishing ${{ steps.next_version.outputs.package }}@${{ steps.next_version.outputs.value }}"
-          npm publish --access public
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
