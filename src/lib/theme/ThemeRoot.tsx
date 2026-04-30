@@ -1,35 +1,50 @@
 import { forwardRef, type CSSProperties, type ReactNode } from 'react'
-import type { ThemeName, ThemeOverride } from '../../types'
+import type { ThemeName } from '../../types'
 import { cn } from '../../utils/cn'
+import { ClassNamesProvider } from './ClassNamesContext'
+import type { LibraryClassNames } from './SlotKeys'
 
 export interface ThemeRootProps {
   theme?: ThemeName
-  themeOverride?: ThemeOverride
+  /**
+   * When true, library components emit no built-in default class strings —
+   * only `data-ec-*` attributes plus user `classNames`. Useful when
+   * consumers want full control over styling with their own design system.
+   */
   headless?: boolean
+  /** User-supplied classNames overrides. Forwarded to context. */
+  classNames?: LibraryClassNames
+  /** Theme-supplied default classNames (selected from a theme map). */
+  themedClassNames?: LibraryClassNames
+  /** Class applied to the root wrapper. */
   className?: string
   style?: CSSProperties
   children?: ReactNode
   /**
-   * `data-ec-*` flag forwarded to the root so consumer CSS can target it.
-   * Matches the attributes documented in spec §19 Tier 3.
+   * `data-ec-scope="panel"|"viewer"` forwarded to the root so consumer CSS
+   * and tests can target the surface independently.
    */
   dataScope?: string
 }
 
 /**
- * Applies theme tokens to its subtree. All theme variables are scoped under
- * `.retm-library-root[data-ec-theme=...]` in `panel.css`.
+ * Renders the theming wrapper for the panel / viewer.
  *
- * In headless mode (`headless={true}`) neither class nor `data-ec-theme` is
- * applied, so none of the bundled styles match. Consumers then style
- * everything via the `data-ec-*` attributes on individual components.
+ * Behavior:
+ *  - Adds `data-ec-theme={theme}` so the CSS theme overrides in `theme.css`
+ *    activate.
+ *  - Provides `ClassNamesContext` so internal components can resolve their
+ *    slot via `useSlot()`.
+ *  - In `headless` mode skips emitting any default theme class and tells
+ *    internals (via context) to skip built-in defaults too.
  */
 export const ThemeRoot = forwardRef<HTMLDivElement, ThemeRootProps>(
   function ThemeRoot(
     {
       theme = 'default',
-      themeOverride,
       headless = false,
+      classNames,
+      themedClassNames,
       className,
       style,
       children,
@@ -37,36 +52,25 @@ export const ThemeRoot = forwardRef<HTMLDivElement, ThemeRootProps>(
     },
     ref,
   ) {
-    const mergedStyle: CSSProperties | undefined = themeOverride
-      ? { ...style, ...(themeOverride as CSSProperties) }
-      : style
+    const dataAttrs = headless
+      ? { 'data-ec-root': '', 'data-ec-headless': '', 'data-ec-scope': dataScope }
+      : { 'data-ec-root': '', 'data-ec-theme': theme, 'data-ec-scope': dataScope }
 
-    if (headless) {
-      return (
+    return (
+      <ClassNamesProvider
+        user={classNames}
+        themed={themedClassNames}
+        headless={headless}
+      >
         <div
           ref={ref}
-          data-ec-root=""
-          data-ec-headless=""
-          data-ec-scope={dataScope}
-          className={className}
-          style={mergedStyle}
+          {...dataAttrs}
+          className={cn(headless ? undefined : 'retm-library-root', className)}
+          style={style}
         >
           {children}
         </div>
-      )
-    }
-
-    return (
-      <div
-        ref={ref}
-        data-ec-root=""
-        data-ec-theme={theme}
-        data-ec-scope={dataScope}
-        className={cn('retm-library-root', className)}
-        style={mergedStyle}
-      >
-        {children}
-      </div>
+      </ClassNamesProvider>
     )
   },
 )

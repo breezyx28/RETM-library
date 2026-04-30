@@ -1,19 +1,27 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
+import tailwindcss from '@tailwindcss/vite'
 import { resolve } from 'node:path'
 
 /**
- * Alias `retm-library` and `retm-library/styles.css` to the library source so
- * edits hot-reload without a rebuild step. Regex aliases are used so the
- * bare-specifier and the subpath don't collide via prefix matching.
+ * Alias `retm-library` and its CSS subpaths to the library source so edits
+ * hot-reload without a rebuild step. Regex aliases are used so the bare
+ * specifier and the CSS subpaths don't collide via prefix matching.
+ *
+ * `@tailwindcss/vite` compiles the library's `src/theme.css` (Tailwind v4
+ * source with `@theme` tokens + `@layer components` rules) on the fly.
  */
 export default defineConfig({
-  plugins: [react()],
+  plugins: [react(), tailwindcss()],
   resolve: {
     alias: [
       {
         find: /^retm-library\/styles\.css$/,
-        replacement: resolve(__dirname, '../src/styles/index.css'),
+        replacement: resolve(__dirname, '../src/theme.css'),
+      },
+      {
+        find: /^retm-library\/theme\.css$/,
+        replacement: resolve(__dirname, '../src/theme.css'),
       },
       {
         find: /^retm-library$/,

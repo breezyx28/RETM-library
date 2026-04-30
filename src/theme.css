@@ -1,0 +1,385 @@
+/*
+ * RETM Library — Tailwind CSS v4 entry.
+ *
+ * Two ways consumers use this file:
+ *   1. Import the prebuilt CSS:
+ *        import 'retm-library/styles.css'
+ *      This file ships compiled to `dist/styles.css` and includes Tailwind's
+ *      preflight + utilities + the library's component layer.
+ *
+ *   2. Import the source theme into your own Tailwind v4 setup:
+ *        @import 'tailwindcss';
+ *        @import 'retm-library/theme.css';
+ *        @source '../node_modules/retm-library/dist';
+ *      This shares the `@theme` tokens with your own Tailwind utilities and
+ *      lets you fully customize / purge.
+ *
+ * All design tokens live in the `@theme` block below. Override them in your
+ * own `@theme` block (later imports win).
+ */
+
+@import 'tailwindcss';
+
+/*
+ * Tell Tailwind v4 to scan the library's own source files for utility classes
+ * we use as defaults (e.g. `bg-ec-primary` inside slot defaults). Consumers
+ * who import this source into their own setup can add their own `@source`
+ * directives — both apply.
+ *
+ * The `..` is relative to `src/theme.css` and resolves to the package root
+ * when this file is imported from `node_modules/retm-library/dist/theme.css`,
+ * so Tailwind picks up the compiled JS too.
+ */
+@source '../src/**/*.{ts,tsx}';
+@source './**/*.{js,cjs,mjs}';
+
+/* ---------------------------------------------------------------------------
+ * Design tokens — exposed as Tailwind v4 theme variables.
+ * These auto-generate utilities like `bg-ec-primary`, `text-ec-text`,
+ * `rounded-ec`, `shadow-ec-md`, `font-ec`.
+ * ------------------------------------------------------------------------- */
+
+@theme {
+  /* Color — brand */
+  --color-ec-primary: #1f2937;
+  --color-ec-primary-hover: #111827;
+  --color-ec-primary-soft: rgba(31, 41, 55, 0.1);
+  --color-ec-accent: #1f2937;
+
+  /* Color — surfaces */
+  --color-ec-bg: #f7f7f8;
+  --color-ec-bg-secondary: #f1f2f4;
+  --color-ec-bg-tertiary: #e9ebef;
+  --color-ec-bg-overlay: rgba(15, 23, 42, 0.38);
+
+  /* Color — borders */
+  --color-ec-border: #e2e4e9;
+  --color-ec-border-strong: #ced2da;
+  --color-ec-ring: rgba(71, 85, 105, 0.22);
+
+  /* Color — text */
+  --color-ec-text: #1f2631;
+  --color-ec-text-secondary: #596171;
+  --color-ec-text-muted: #747d8c;
+  --color-ec-text-inverse: #ffffff;
+
+  /* Color — semantic */
+  --color-ec-danger: #a81717;
+  --color-ec-danger-hover: #7e1010;
+  --color-ec-danger-soft: rgba(168, 23, 23, 0.1);
+  --color-ec-success: #1f7a38;
+  --color-ec-warning: #7a550d;
+  --color-ec-info: #222222;
+
+  /* Typography */
+  --font-ec:
+    'Segoe UI Variable', 'Segoe UI', system-ui, -apple-system, Roboto,
+    'Helvetica Neue', Arial, sans-serif;
+  --font-ec-mono:
+    'Fira Code', ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+
+  --text-ec-xs: 11px;
+  --text-ec-sm: 12px;
+  --text-ec-md: 14px;
+  --text-ec-lg: 17px;
+  --text-ec-xl: 21px;
+  --text-ec-2xl: 30px;
+  --text-ec-3xl: 36px;
+
+  /* Spacing scale (4-based) */
+  --spacing-ec-1: 4px;
+  --spacing-ec-2: 8px;
+  --spacing-ec-3: 12px;
+  --spacing-ec-4: 16px;
+  --spacing-ec-5: 20px;
+  --spacing-ec-6: 24px;
+  --spacing-ec-8: 32px;
+  --spacing-ec-10: 40px;
+  --spacing-ec-12: 48px;
+
+  /* Radii */
+  --radius-ec-sm: 8px;
+  --radius-ec: 11px;
+  --radius-ec-lg: 15px;
+  --radius-ec-xl: 20px;
+  --radius-ec-pill: 999px;
+  --radius-ec-full: 999px;
+
+  /* Shadows */
+  --shadow-ec-sm: 0 1px 2px rgba(15, 23, 42, 0.06);
+  --shadow-ec: 0 14px 30px -22px rgba(15, 23, 42, 0.22);
+  --shadow-ec-md:
+    0 20px 44px -30px rgba(15, 23, 42, 0.28),
+    0 3px 12px -10px rgba(15, 23, 42, 0.15);
+  --shadow-ec-lg:
+    0 40px 80px -34px rgba(15, 23, 42, 0.36),
+    0 16px 30px -16px rgba(15, 23, 42, 0.16);
+
+  /* Motion */
+  --duration-ec-fast: 120ms;
+  --duration-ec: 180ms;
+  --ease-ec: cubic-bezier(0.2, 0.8, 0.2, 1);
+
+  /* Z-index */
+  --z-ec-dialog: 1000;
+  --z-ec-popover: 1100;
+  --z-ec-tooltip: 1200;
+
+  /* Animation keyframes (Tailwind v4 picks these up automatically) */
+  --animate-ec-fade-in: ec-fade-in 180ms cubic-bezier(0.2, 0.8, 0.2, 1);
+  --animate-ec-scale-in: ec-scale-in 180ms cubic-bezier(0.2, 0.8, 0.2, 1);
+  --animate-ec-pop-in: ec-pop-in 120ms cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+/* Animation keyframes used by --animate-ec-* tokens. */
+@keyframes ec-fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes ec-scale-in {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+}
+
+@keyframes ec-pop-in {
+  from {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* ---------------------------------------------------------------------------
+ * Legacy `--ec-*` aliases.
+ *
+ * Internal stylesheets (`./styles/panel.css`, `./styles/editor.css`) reference
+ * the original `--ec-*` token names. We keep those names alive as thin
+ * aliases so the component layer keeps working — overriding `@theme` tokens
+ * in your own setup automatically propagates here.
+ *
+ * Scope covers:
+ *   - the document root,
+ *   - the legacy `.retm-library-root` wrapper,
+ *   - Radix portal targets that escape the wrapper.
+ * ------------------------------------------------------------------------- */
+
+:where(
+  :root,
+  .retm-library-root,
+  [data-ec-overlay],
+  [data-ec-shell],
+  [data-ec-menu],
+  [data-ec-alertdialog],
+  [data-ec-dialog]
+) {
+  --ec-primary: var(--color-ec-primary);
+  --ec-primary-hover: var(--color-ec-primary-hover);
+  --ec-primary-soft: var(--color-ec-primary-soft);
+  --ec-accent: var(--color-ec-accent);
+
+  --ec-bg: var(--color-ec-bg);
+  --ec-bg-secondary: var(--color-ec-bg-secondary);
+  --ec-bg-tertiary: var(--color-ec-bg-tertiary);
+  --ec-bg-overlay: var(--color-ec-bg-overlay);
+
+  --ec-border: var(--color-ec-border);
+  --ec-border-strong: var(--color-ec-border-strong);
+  --ec-ring: var(--color-ec-ring);
+  --ec-focus-outline: 2px solid #5b6472;
+  --ec-focus-offset: 2px;
+
+  --ec-text: var(--color-ec-text);
+  --ec-text-secondary: var(--color-ec-text-secondary);
+  --ec-text-muted: var(--color-ec-text-muted);
+  --ec-text-inverse: var(--color-ec-text-inverse);
+
+  --ec-danger: var(--color-ec-danger);
+  --ec-danger-hover: var(--color-ec-danger-hover);
+  --ec-danger-soft: var(--color-ec-danger-soft);
+  --ec-success: var(--color-ec-success);
+  --ec-warning: var(--color-ec-warning);
+  --ec-info: var(--color-ec-info);
+
+  --ec-font: var(--font-ec);
+  --ec-font-mono: var(--font-ec-mono);
+
+  --ec-text-xs: var(--text-ec-xs);
+  --ec-text-sm: var(--text-ec-sm);
+  --ec-text-md: var(--text-ec-md);
+  --ec-text-lg: var(--text-ec-lg);
+  --ec-text-xl: var(--text-ec-xl);
+  --ec-text-2xl: var(--text-ec-2xl);
+  --ec-text-3xl: var(--text-ec-3xl);
+
+  --ec-space-1: var(--spacing-ec-1);
+  --ec-space-2: var(--spacing-ec-2);
+  --ec-space-3: var(--spacing-ec-3);
+  --ec-space-4: var(--spacing-ec-4);
+  --ec-space-5: var(--spacing-ec-5);
+  --ec-space-6: var(--spacing-ec-6);
+  --ec-space-8: var(--spacing-ec-8);
+  --ec-space-10: var(--spacing-ec-10);
+  --ec-space-12: var(--spacing-ec-12);
+
+  --ec-radius-sm: var(--radius-ec-sm);
+  --ec-radius: var(--radius-ec);
+  --ec-radius-lg: var(--radius-ec-lg);
+  --ec-radius-xl: var(--radius-ec-xl);
+  --ec-radius-pill: var(--radius-ec-pill);
+  --ec-radius-full: var(--radius-ec-full);
+
+  --ec-shadow-sm: var(--shadow-ec-sm);
+  --ec-shadow: var(--shadow-ec);
+  --ec-shadow-md: var(--shadow-ec-md);
+  --ec-shadow-lg: var(--shadow-ec-lg);
+
+  --ec-duration-fast: var(--duration-ec-fast);
+  --ec-duration: var(--duration-ec);
+  --ec-ease: var(--ease-ec);
+
+  --ec-z-dialog: var(--z-ec-dialog);
+  --ec-z-popover: var(--z-ec-popover);
+  --ec-z-tooltip: var(--z-ec-tooltip);
+}
+
+/* ---------------------------------------------------------------------------
+ * Built-in theme variants.
+ *
+ * Activated by `data-ec-theme="<name>"` on the panel/viewer root.
+ * Override individual `--color-ec-*` tokens for the theme's surface.
+ * Consumers can add their own themes by writing similar blocks.
+ * ------------------------------------------------------------------------- */
+
+[data-ec-theme='dark'] {
+  --color-ec-primary: #3b82f6;
+  --color-ec-primary-hover: #60a5fa;
+  --color-ec-primary-soft: rgba(59, 130, 246, 0.18);
+  --color-ec-accent: #fbbf24;
+
+  --color-ec-bg: #0f172a;
+  --color-ec-bg-secondary: #1e293b;
+  --color-ec-bg-tertiary: #334155;
+  --color-ec-bg-overlay: rgba(0, 0, 0, 0.6);
+
+  --color-ec-border: #334155;
+  --color-ec-border-strong: #475569;
+  --color-ec-ring: rgba(59, 130, 246, 0.45);
+
+  --color-ec-text: #f1f5f9;
+  --color-ec-text-secondary: #94a3b8;
+  --color-ec-text-muted: #64748b;
+  --color-ec-text-inverse: #0f172a;
+
+  --color-ec-danger: #f87171;
+  --color-ec-danger-hover: #ef4444;
+  --color-ec-danger-soft: rgba(248, 113, 113, 0.15);
+
+  --shadow-ec-sm: 0 1px 2px rgba(0, 0, 0, 0.4);
+  --shadow-ec: 0 2px 8px rgba(0, 0, 0, 0.35);
+  --shadow-ec-md: 0 4px 12px rgba(0, 0, 0, 0.4);
+  --shadow-ec-lg: 0 24px 48px -12px rgba(0, 0, 0, 0.6);
+}
+
+[data-ec-theme='minimal'] {
+  --color-ec-primary: #000000;
+  --color-ec-primary-hover: #111827;
+  --color-ec-primary-soft: rgba(0, 0, 0, 0.08);
+  --color-ec-bg: #ffffff;
+  --color-ec-bg-secondary: #fcfcfc;
+  --color-ec-bg-tertiary: #f5f5f5;
+  --color-ec-border: #efefef;
+  --radius-ec: 4px;
+}
+
+[data-ec-theme='editorial'] {
+  --color-ec-primary: #b45309;
+  --color-ec-primary-hover: #92400e;
+  --color-ec-primary-soft: rgba(180, 83, 9, 0.12);
+  --color-ec-bg: #fffdf7;
+  --color-ec-bg-secondary: #f9f3e7;
+  --color-ec-bg-tertiary: #f3ead8;
+  --color-ec-border: #e7e0d5;
+}
+
+[data-ec-theme='brutalist'] {
+  --color-ec-primary: #000000;
+  --color-ec-primary-hover: #111111;
+  --color-ec-primary-soft: rgba(0, 0, 0, 0.12);
+  --color-ec-accent: #facc15;
+  --color-ec-border: #000000;
+  --radius-ec: 0px;
+  --shadow-ec: 4px 4px 0 rgba(0, 0, 0, 1);
+}
+
+[data-ec-theme='glassmorphism'] {
+  --color-ec-primary: #6366f1;
+  --color-ec-primary-hover: #4f46e5;
+  --color-ec-primary-soft: rgba(99, 102, 241, 0.16);
+  --color-ec-bg: rgba(255, 255, 255, 0.72);
+  --color-ec-bg-secondary: rgba(255, 255, 255, 0.58);
+  --color-ec-bg-tertiary: rgba(255, 255, 255, 0.5);
+  --color-ec-border: rgba(255, 255, 255, 0.35);
+  --radius-ec: 16px;
+}
+
+/* ---------------------------------------------------------------------------
+ * Component layer — internal RETM styles.
+ *
+ * Sourced from `./theme/panel.css` (library/cards/forms/dialogs/menus/viewer)
+ * and `./theme/editor.css` (toolbar, sidebars, canvas, TipTap, blocks).
+ * These rules consume the legacy `--ec-*` aliases above, which now resolve
+ * to the `@theme` tokens, so any theme override (built-in or consumer) flows
+ * through automatically.
+ *
+ * Wrapping in `@layer components` keeps them below user-supplied utility
+ * classes so consumers' Tailwind utilities (e.g. `bg-blue-500` passed via
+ * `classNames={{ controls: { btn: '...' } }}`) win every time.
+ * ------------------------------------------------------------------------- */
+
+@layer components {
+  @import './theme/panel.css';
+  @import './theme/editor.css';
+}
+
+/* ---------------------------------------------------------------------------
+ * Base — primitive resets used by the library shell.
+ * ------------------------------------------------------------------------- */
+
+@layer base {
+  .retm-library-root,
+  .retm-library-root *,
+  .retm-library-root *::before,
+  .retm-library-root *::after,
+  [data-ec-overlay] *,
+  [data-ec-shell] *,
+  [data-ec-menu] *,
+  [data-ec-alertdialog] * {
+    box-sizing: border-box;
+  }
+
+  [data-ec-visually-hidden] {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
+}

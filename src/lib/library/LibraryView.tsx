@@ -7,6 +7,9 @@ import { migrateEditorJson } from '../types/editorDocument'
 import { EmptyState } from './EmptyState'
 import { NewTemplateButton } from './NewTemplateButton'
 import { TemplateCard } from './TemplateCard'
+import { useSlot } from '../theme'
+import { Btn, Field, LabelText, Input, Alert } from '../ui'
+import { cn } from '../../utils/cn'
 
 export function LibraryView() {
   const templates = usePanelStore((s) => s.templates)
@@ -82,12 +85,22 @@ export function LibraryView() {
     win.document.close()
   }
 
+  const [rootT, rootU] = useSlot('library.root')
+  const [headT, headU] = useSlot('library.head')
+  const [titleT, titleU] = useSlot('library.title')
+  const [subtitleT, subtitleU] = useSlot('library.subtitle')
+  const [filterT, filterU] = useSlot('library.filter')
+  const [actionsT, actionsU] = useSlot('library.actions')
+  const [gridT, gridU] = useSlot('library.grid')
+
   return (
-    <div data-ec-library="">
-      <header data-ec-library-head="">
+    <div data-ec-library="" className={cn(rootT, rootU)}>
+      <header data-ec-library-head="" className={cn(headT, headU)}>
         <div>
-          <h2 data-ec-library-title="">Templates</h2>
-          <p data-ec-library-subtitle="">
+          <h2 data-ec-library-title="" className={cn(titleT, titleU)}>
+            Templates
+          </h2>
+          <p data-ec-library-subtitle="" className={cn(subtitleT, subtitleU)}>
             {loading
               ? 'Loading templates\u2026'
               : `${visibleTemplates.length} ${visibleTemplates.length === 1 ? 'template' : 'templates'}`}
@@ -96,27 +109,26 @@ export function LibraryView() {
         <NewTemplateButton onCreate={handleCreate} disabled={loading || userRole === 'viewer'} />
       </header>
       {organizationMode !== 'folders' ? (
-        <label data-ec-field="" data-ec-library-filter="">
-          <span data-ec-label="">Tag filter</span>
-          <input
-            data-ec-input=""
+        <Field data-ec-library-filter="" className={cn(filterT, filterU)}>
+          <LabelText>Tag filter</LabelText>
+          <Input
             value={tagFilter}
             onChange={(e) => setTagFilter(e.target.value)}
             placeholder="Filter by tag..."
           />
-        </label>
+        </Field>
       ) : null}
 
       {error ? (
-        <div data-ec-alert="" data-ec-variant="error" role="alert">
+        <Alert variant="error" role="alert">
           {error}
-        </div>
+        </Alert>
       ) : null}
 
       {!loading && visibleTemplates.length === 0 ? (
         <EmptyState onCreate={handleCreate} />
       ) : (
-        <div data-ec-grid="">
+        <div data-ec-grid="" className={cn(gridT, gridU)}>
           {visibleTemplates.map((template) => (
             <div key={template.id}>
               <TemplateCard
@@ -156,37 +168,34 @@ export function LibraryView() {
                 }}
               />
               {publishMode === 'approval' && userRole !== 'viewer' ? (
-                <div className="ec-rfield-inline" data-ec-library-actions="">
+                <div
+                  className={cn('ec-rfield-inline', actionsT, actionsU)}
+                  data-ec-library-actions=""
+                >
                   {template.status === 'draft' ? (
-                    <button
-                      type="button"
-                      data-ec-btn=""
-                      data-ec-variant="ghost"
+                    <Btn
+                      variant="ghost"
                       onClick={() => void setStatus(template.id, 'pending_review')}
                     >
                       Submit review
-                    </button>
+                    </Btn>
                   ) : null}
                   {template.status === 'pending_review' && userRole === 'admin' ? (
                     <>
-                      <button
-                        type="button"
-                        data-ec-btn=""
+                      <Btn
                         onClick={() => void setStatus(template.id, 'published')}
                       >
                         Approve
-                      </button>
-                      <button
-                        type="button"
-                        data-ec-btn=""
-                        data-ec-variant="ghost"
+                      </Btn>
+                      <Btn
+                        variant="ghost"
                         onClick={() => {
                           const note = window.prompt('Rejection note', 'Please update details.')
                           void setStatus(template.id, 'draft', note ?? undefined)
                         }}
                       >
                         Reject
-                      </button>
+                      </Btn>
                     </>
                   ) : null}
                 </div>

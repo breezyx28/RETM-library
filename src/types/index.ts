@@ -21,7 +21,4 @@ export type {
   VersionType,
 } from './template'
 
-export type {
-  ThemeName,
-  ThemeOverride,
-} from './theme'
+export type { ThemeName } from './theme'

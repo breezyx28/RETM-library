@@ -46,6 +46,9 @@ High-level flow:
 - React DOM `>=18`
 - Works in React apps (Vite, CRA, custom setups) and Next.js client boundaries.
 - Browser support: Chrome / Firefox / Edge 90+, Safari 14+, iOS 14+.
+- **Tailwind CSS v4** — RETM is Tailwind v4 native. You can either drop in the
+  prebuilt CSS, or import the source theme into your own Tailwind v4 setup
+  for full customization and tree-shaking.
 
 > `EmailTemplatePanel` and `EmailTemplateViewer` are interactive client components.  
 > In Next.js App Router, mount them from a `"use client"` component.
@@ -58,10 +61,41 @@ High-level flow:
 
 - Node.js 18+ recommended
 - React 18+
-- Include RETM stylesheet once:
+- Pick **one** of the two CSS paths below.
+
+#### Path A — drop-in prebuilt CSS (zero config)
 
 ```ts
 import 'retm-library/styles.css'
+```
+
+This ships a fully compiled stylesheet (Tailwind v4 utilities + the library's
+component layer + base reset). No Tailwind setup required on your side.
+
+#### Path B — Tailwind v4 source (full customization)
+
+If your app already uses Tailwind v4, import the library's source theme so its
+`@theme` tokens and `@layer components` rules merge with yours:
+
+```css
+/* your-app/src/app.css */
+@import 'tailwindcss';
+@import 'retm-library/theme.css';
+
+/* Tell Tailwind to scan the library too, so utilities used in slot classNames
+   (e.g. `bg-blue-500` passed via `classNames`) get included. */
+@source '../node_modules/retm-library/dist/**/*.{js,cjs,mjs}';
+```
+
+You can override any token by re-declaring it in your own `@theme` block — the
+later import wins:
+
+```css
+@theme {
+  --color-ec-primary: #0f766e;
+  --color-ec-primary-hover: #115e59;
+  --radius-ec-lg: 16px;
+}
 ```
 
 ### Local library development
@@ -89,10 +123,11 @@ npm run typecheck
 
 - React + TypeScript
 - Vite (playground/dev build)
+- **Tailwind CSS v4** (`@theme` design tokens + `@layer components` styles)
+- `tailwind-merge` for slot conflict resolution (user utilities win)
 - TipTap (rich text editor internals)
 - Radix UI primitives (menus/dialog foundations)
 - Zustand (panel/store state management)
-- CSS tokens (`--ec-*`) + scoped library styles
 
 ---
 
@@ -303,39 +338,78 @@ Typical integration pattern:
 
 ## How deep can layout/UI be customized?
 
-Very deep, through:
+Three independent layers, all native to Tailwind v4:
 
-- Theme prop + token system
-- CSS variable overrides (`--ec-*`)
-- Scoped selectors under `.retm-library-root`
-- Headless mode (for host-level composition control where needed)
+1. **`theme` prop** — pick a built-in `ThemeName` (`default`, `dark`, `minimal`,
+   `editorial`, `brutalist`, `glassmorphism`). This sets `data-ec-theme="..."`
+   on the root, which the CSS in `theme.css` uses to swap surface tokens.
+2. **`classNames` prop** — typed slot map. Pass any Tailwind utility classes
+   per slot to override visuals at the component level. Library defaults +
+   theme defaults + your classes are merged with `tailwind-merge`, so your
+   utilities always win.
+3. **`@theme` overrides** — when using Path B above, redefine any
+   `--color-ec-*`, `--radius-ec-*`, `--shadow-ec-*`, `--font-ec` token in your
+   own `@theme` block. Both built-in components and your own
+   `bg-ec-primary`-style utilities pick it up.
 
-### Real customization example (token override)
+`headless` mode — when you want to fully own styling with your own design
+system: pass `headless`, and the library skips emitting any built-in default
+class strings. Only `data-ec-*` attributes plus your `classNames` apply.
+
+### Example — slot `classNames` (component-level styling)
+
+```tsx
+import { EmailTemplatePanel } from 'retm-library'
+import 'retm-library/styles.css'
+
+<EmailTemplatePanel
+  variableSchema={schema}
+  classNames={{
+    controls: {
+      btnPrimary: 'bg-blue-500 hover:bg-blue-600 rounded-full',
+      input: 'rounded-xl border-blue-200 focus:border-blue-400',
+    },
+    library: {
+      card: 'shadow-lg ring-1 ring-blue-100',
+      title: 'text-blue-900',
+    },
+    editor: {
+      toolbar: 'border-b-2 border-blue-200 bg-white/80 backdrop-blur-md',
+    },
+  }}
+/>
+```
+
+### Example — `@theme` token override (Path B only)
 
 ```css
-.retm-library-root {
-  --ec-primary: #0f766e;
-  --ec-primary-hover: #115e59;
-  --ec-bg: #ffffff;
-  --ec-bg-secondary: #f6f8fb;
-  --ec-border: #d9e0ea;
-  --ec-radius-lg: 16px;
-  --ec-shadow-md: 0 12px 30px -24px rgba(15, 23, 42, 0.45);
+/* your-app/src/app.css */
+@import 'tailwindcss';
+@import 'retm-library/theme.css';
+
+@theme {
+  --color-ec-primary: #0f766e;
+  --color-ec-primary-hover: #115e59;
+  --color-ec-bg: #ffffff;
+  --color-ec-bg-secondary: #f6f8fb;
+  --color-ec-border: #d9e0ea;
+  --radius-ec-lg: 16px;
+  --shadow-ec-md: 0 12px 30px -24px rgba(15, 23, 42, 0.45);
 }
 ```
 
-### Real customization example (component-level styling)
+### Example — pierce-through with arbitrary selectors
 
-```css
-.retm-library-root [data-ec-card] {
-  border-radius: 18px;
-  border-color: #cfd9e8;
-}
+The `classNames.root` slot accepts any utility, including arbitrary selectors,
+so you can target any internal `data-ec-*` element without touching the slot
+list:
 
-.retm-library-root [data-ec-btn][data-ec-variant='primary'] {
-  background: #0f766e;
-  border-color: #0f766e;
-}
+```tsx
+<EmailTemplatePanel
+  classNames={{
+    root: '[&_[data-ec-card]]:rounded-2xl [&_[data-ec-btn][data-ec-variant=primary]]:bg-emerald-600',
+  }}
+/>
 ```
 
 ---
@@ -360,11 +434,15 @@ To inspect app bundle impact in your project, use your bundler analyzer (e.g. Vi
 retm-library/
   src/
     index.ts
+    theme.css                  # Tailwind v4 entry: @theme + @layer components
+    theme/                     # Tailwind v4 source partials (panel.css, editor.css)
     components/
       EmailTemplatePanel/
       EmailTemplateViewer/
     lib/
-    styles/
+      theme/                   # ClassNamesContext, useSlot, themes map
+      ui/                      # Btn / Input / Field / Alert wrappers
+      ...
     types/
   playground/
   retm-library-spec.md

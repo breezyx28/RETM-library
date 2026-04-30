@@ -2,6 +2,8 @@ import { useState } from 'react'
 import {
   EmailTemplatePanel,
   EmailTemplateViewer,
+  type EmailTemplatePanelClassNames,
+  type EmailTemplateViewerClassNames,
   type ThemeName,
   type VariableSchema,
 } from 'retm-library'
@@ -47,6 +49,24 @@ export default function App() {
   const [headless, setHeadless] = useState(false)
   const [dialogOpen, setDialogOpen] = useState(false)
 
+  // Tailwind v4 native: customize per slot via the typed `classNames` prop.
+  // The library merges defaults + theme + user overrides via tailwind-merge.
+  const panelClassNames: EmailTemplatePanelClassNames | undefined = overridePrimary
+    ? {
+        controls: {
+          btnPrimary: 'bg-violet-600 hover:bg-violet-700 border-violet-600',
+        },
+      }
+    : undefined
+
+  const viewerClassNames: EmailTemplateViewerClassNames | undefined = overridePrimary
+    ? {
+        controls: {
+          btnPrimary: 'bg-violet-600 hover:bg-violet-700 border-violet-600',
+        },
+      }
+    : undefined
+
   return (
     <div className="pg-shell" data-pg-theme={theme}>
       <header className="pg-header">
@@ -76,7 +96,7 @@ export default function App() {
               checked={overridePrimary}
               onChange={(e) => setOverridePrimary(e.target.checked)}
             />
-            <span>Override primary (violet)</span>
+            <span>Override primary via classNames (violet)</span>
           </label>
 
           <label className="pg-ctrl">
@@ -118,7 +138,7 @@ export default function App() {
           organizationMode="both"
           theme={theme}
           headless={headless}
-          themeOverride={overridePrimary ? { '--ec-primary': '#7c3aed', '--ec-primary-hover': '#6d28d9' } : undefined}
+          classNames={panelClassNames}
           asDialog
           open={dialogOpen}
           onOpenChange={setDialogOpen}
@@ -152,7 +172,7 @@ export default function App() {
           defaultLanguage="en"
           theme={theme}
           headless={headless}
-          themeOverride={overridePrimary ? { '--ec-primary': '#7c3aed', '--ec-primary-hover': '#6d28d9' } : undefined}
+          classNames={panelClassNames}
           asDialog={false}
         />
       </section>
@@ -182,7 +202,7 @@ export default function App() {
           codeView={{ enabled: true, defaultTab: 'preview' }}
           theme={theme}
           headless={headless}
-          themeOverride={overridePrimary ? { '--ec-primary': '#7c3aed' } : undefined}
+          classNames={viewerClassNames}
         />
       </section>
     </div>

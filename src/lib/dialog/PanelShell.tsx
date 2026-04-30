@@ -1,14 +1,14 @@
-import type { CSSProperties, ReactNode } from 'react'
+import type { ReactNode } from 'react'
 import * as Dialog from '@radix-ui/react-dialog'
 import { X } from 'lucide-react'
 import { useControlledOpen } from './useControlledOpen'
-import type { ThemeName, ThemeOverride } from '../../types'
+import type { ThemeName } from '../../types'
+import { useHeadless, useSlot } from '../theme'
+import { cn } from '../../utils/cn'
 
 export interface PanelShellProps {
   asDialog?: boolean
-  headless?: boolean
   theme?: ThemeName
-  themeOverride?: ThemeOverride
   open?: boolean
   defaultOpen?: boolean
   onOpenChange?: (open: boolean) => void
@@ -24,15 +24,15 @@ export interface PanelShellProps {
  * When `asDialog={false}` the content is rendered inline as a full-surface
  * `<section>` — useful for embedding on a dedicated admin route.
  *
- * The inner markup is identical in both modes so styling and behavior do not
- * diverge.
+ * Styling consumes `useSlot()` for the overlay, shell, and close-button
+ * slots (`dialogs.overlay`, `dialogs.shell{,Inline,Dialog}`, `dialogs.close`)
+ * so consumers can override either at the panel root via
+ * `classNames={{ dialogs: { ... } }}` or via their own Tailwind utilities.
  */
 export function PanelShell(props: PanelShellProps) {
   const {
     asDialog = true,
-    headless = false,
     theme = 'default',
-    themeOverride,
     open: controlledOpen,
     defaultOpen,
     onOpenChange,
@@ -47,9 +47,20 @@ export function PanelShell(props: PanelShellProps) {
     onOpenChange,
   })
 
+  const headless = useHeadless()
+  const [overlayT, overlayU] = useSlot('dialogs.overlay')
+  const [shellT, shellU] = useSlot('dialogs.shell')
+  const [shellInlineT, shellInlineU] = useSlot('dialogs.shellInline')
+  const [shellDialogT, shellDialogU] = useSlot('dialogs.shellDialog')
+  const [closeT, closeU] = useSlot('dialogs.close')
+
   if (!asDialog) {
     return (
-      <section data-ec-shell="" data-ec-mode="inline">
+      <section
+        data-ec-shell=""
+        data-ec-mode="inline"
+        className={cn(shellT, shellU, shellInlineT, shellInlineU)}
+      >
         {children}
       </section>
     )
@@ -59,17 +70,23 @@ export function PanelShell(props: PanelShellProps) {
     <Dialog.Root open={open} onOpenChange={setOpen}>
       {trigger ? <Dialog.Trigger asChild>{trigger}</Dialog.Trigger> : null}
       <Dialog.Portal>
-        <Dialog.Overlay data-ec-overlay="" />
+        <Dialog.Overlay
+          data-ec-overlay=""
+          className={cn(overlayT, overlayU)}
+        />
         <Dialog.Content
-          className={headless ? undefined : 'retm-library-root'}
+          className={cn(
+            headless ? undefined : 'retm-library-root',
+            shellT,
+            shellU,
+            shellDialogT,
+            shellDialogU,
+          )}
           data-ec-shell=""
           data-ec-mode="dialog"
           data-ec-theme={headless ? undefined : theme}
           aria-describedby={undefined}
-          style={themeOverride as CSSProperties | undefined}
           onOpenAutoFocus={(e) => {
-            // Avoid auto-focusing the close button: let the library view take
-            // focus instead for a calmer first paint.
             e.preventDefault()
           }}
         >
@@ -80,6 +97,7 @@ export function PanelShell(props: PanelShellProps) {
               type="button"
               data-ec-close=""
               aria-label="Close panel"
+              className={cn(closeT, closeU)}
             >
               <X size={18} aria-hidden="true" />
             </button>
@@ -89,4 +107,3 @@ export function PanelShell(props: PanelShellProps) {
     </Dialog.Root>
   )
 }
-

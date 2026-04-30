@@ -7,6 +7,8 @@ import type { EditorDocumentV1 } from '../types/editorDocument'
 import type { SavedBlock } from '../types/savedBlock'
 import { EMAIL_PRESETS, type EmailPreset } from './presets/emailPresets'
 import { formatRelative } from '../utils/date'
+import { useSlot } from '../theme'
+import { cn } from '../../utils/cn'
 
 export function EditorLeftPanel({
   work,
@@ -53,9 +55,16 @@ export function EditorLeftPanel({
     if (firstText) setActiveTextBlockId(firstText.id)
   }
 
+  const [sidebarT, sidebarU] = useSlot('editor.sidebar')
+  const [leftT, leftU] = useSlot('editor.sidebarLeft')
+
   if (readOnly) {
     return (
-      <aside data-ec-sidebar="" data-ec-sidebar-left="" className="ec-sidebar">
+      <aside
+        data-ec-sidebar=""
+        data-ec-sidebar-left=""
+        className={cn('ec-sidebar', sidebarT, sidebarU, leftT, leftU)}
+      >
         <p className="ec-muted">Read only</p>
       </aside>
     )
@@ -65,7 +74,7 @@ export function EditorLeftPanel({
     <aside
       data-ec-sidebar=""
       data-ec-sidebar-left=""
-      className="ec-sidebar"
+      className={cn('ec-sidebar', sidebarT, sidebarU, leftT, leftU)}
     >
       <div className="ec-left-nav-head">
         <p className="ec-left-nav-title">Templates Editor</p>

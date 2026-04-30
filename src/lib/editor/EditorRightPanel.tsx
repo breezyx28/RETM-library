@@ -5,6 +5,8 @@ import { defaultAttachment, newAttachmentId } from '../types/editorDocument'
 import type { TemplateVersion } from '../../types'
 import { formatRelative } from '../utils/date'
 import { resolveAttachmentFileVisual } from './attachmentFileIcons'
+import { useSlot } from '../theme'
+import { cn } from '../../utils/cn'
 
 type AttachmentKind = NonNullable<AttachmentItem['kind']>
 type AttachmentDisplayType = AttachmentItem['type']
@@ -189,11 +191,20 @@ export function EditorRightPanel({
     setDraftAttachment({ ...defaultAttachment(), id: newAttachmentId() })
   }
 
+  const [sidebarT, sidebarU] = useSlot('editor.sidebar')
+  const [rightT, rightU] = useSlot('editor.sidebarRight')
+
   return (
     <aside
       data-ec-sidebar=""
       data-ec-properties=""
-      className="ec-sidebar ec-sidebar--right"
+      className={cn(
+        'ec-sidebar ec-sidebar--right',
+        sidebarT,
+        sidebarU,
+        rightT,
+        rightU,
+      )}
     >
       <div className="ec-right-tabs" aria-label="Editor properties sections">
         <button

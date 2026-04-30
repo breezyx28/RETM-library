@@ -6,6 +6,9 @@ import {
   Save,
   Undo2,
 } from 'lucide-react'
+import { useSlot } from '../theme'
+import { Btn } from '../ui'
+import { cn } from '../../utils/cn'
 
 export function EditorToolbar({
   templateName,
@@ -32,14 +35,14 @@ export function EditorToolbar({
   readOnly: boolean
   saving: boolean
 }) {
+  const [t, u] = useSlot('editor.toolbar')
+
   return (
-    <div data-ec-toolbar="" className="ec-toolbar">
+    <div data-ec-toolbar="" className={cn('ec-toolbar', t, u)}>
       <div className="ec-toolbar__left">
         <div className="ec-toolbar__brand">
-          <button
-            type="button"
-            data-ec-btn=""
-            data-ec-variant="ghost"
+          <Btn
+            variant="ghost"
             onClick={onBack}
             className="ec-toolbar__brand-btn"
             aria-label="Back to library"
@@ -47,7 +50,7 @@ export function EditorToolbar({
           >
             <ArrowLeft size={15} />
             Scribe
-          </button>
+          </Btn>
           <p className="ec-toolbar__crumb">
             <span>My Templates</span>
             <span>/</span>
@@ -56,43 +59,37 @@ export function EditorToolbar({
         </div>
       </div>
       <div className="ec-toolbar__right">
-        <button type="button" data-ec-btn="" onClick={onUndo} disabled={!canUndo} aria-label="Undo" title="Undo">
+        <Btn onClick={onUndo} disabled={!canUndo} aria-label="Undo" title="Undo">
           <Undo2 size={16} />
-        </button>
-        <button type="button" data-ec-btn="" onClick={onRedo} disabled={!canRedo} aria-label="Redo" title="Redo">
+        </Btn>
+        <Btn onClick={onRedo} disabled={!canRedo} aria-label="Redo" title="Redo">
           <Redo2 size={16} />
-        </button>
-        <button
-          type="button"
-          data-ec-btn=""
-          data-ec-variant="ghost"
+        </Btn>
+        <Btn
+          variant="ghost"
           onClick={onPreview}
           aria-label="Preview"
           title="Preview"
         >
           <MonitorPlay size={16} />
-        </button>
-        <button
-          type="button"
-          data-ec-btn=""
-          data-ec-variant="ghost"
+        </Btn>
+        <Btn
+          variant="ghost"
           onClick={onExport}
           aria-label="Export"
           title="Export"
         >
           <Download size={16} />
-        </button>
-        <button
-          type="button"
-          data-ec-btn=""
-          data-ec-variant="primary"
+        </Btn>
+        <Btn
+          variant="primary"
           onClick={onSave}
           disabled={readOnly || saving}
           aria-label={saving ? 'Saving' : 'Save'}
           title={saving ? 'Saving' : 'Save'}
         >
           <Save size={16} />
-        </button>
+        </Btn>
       </div>
     </div>
   )

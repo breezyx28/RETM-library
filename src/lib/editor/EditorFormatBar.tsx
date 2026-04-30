@@ -14,6 +14,7 @@ import {
   Image as ImageIcon,
 } from 'lucide-react'
 import { cn } from '../../utils/cn'
+import { useSlot } from '../theme'
 
 interface EditorFormatBarProps {
   getActiveEditor: () => Editor | null
@@ -162,9 +163,11 @@ export function EditorFormatBar({ getActiveEditor, readOnly = false }: EditorFor
     setUrlModal(null)
   }
 
+  const [t, u] = useSlot('editor.formatBar')
+
   return (
     <div
-      className="ec-fmtbar"
+      className={cn('ec-fmtbar', t, u)}
       data-ec-fmtbar=""
       role="toolbar"
       aria-label="Text formatting"

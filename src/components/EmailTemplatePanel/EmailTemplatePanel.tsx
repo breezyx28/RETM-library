@@ -1,6 +1,6 @@
 import { useMemo } from 'react'
 import type { EmailTemplatePanelProps } from './EmailTemplatePanel.types'
-import { ThemeRoot } from '../../lib/theme'
+import { ThemeRoot, panelThemes } from '../../lib/theme'
 import { PanelShell } from '../../lib/dialog'
 import { createAdapter } from '../../lib/storage'
 import { PanelStoreProvider, usePanelStore } from '../../lib/store'
@@ -8,23 +8,24 @@ import { LibraryView, RenameDialog, DeleteConfirmDialog } from '../../lib/librar
 import { PanelConfigProvider } from '../../lib/context/PanelConfigContext'
 import { TemplateEditor } from '../../lib/editor/TemplateEditor'
 import { cn } from '../../utils/cn'
+import { useSlot } from '../../lib/theme'
 
 /**
  * `<EmailTemplatePanel>` — authoring surface for operation teams (spec §3.1, §6).
  *
  * Composition:
- *   ThemeRoot            -> applies --ec-* variables + theme attributes
- *     PanelStoreProvider -> per-instance zustand store (templates, view, dialogs)
+ *   ThemeRoot            -> applies data-ec-theme + ClassNamesContext
+ *     PanelStoreProvider -> per-instance zustand store
  *       PanelShell       -> Dialog wrapper or inline section
  *         <PanelBody />  -> switches on store.view (library | editor)
  *
- * Slice A only renders the library view + a placeholder editor. The full
- * TipTap-based editor lands in Slice B.
+ * Tailwind v4 native: pass `classNames={{ ... }}` to override any slot with
+ * utility classes. Pass `headless` to skip the library's defaults entirely.
  */
 export function EmailTemplatePanel(props: EmailTemplatePanelProps) {
   const {
     theme = 'default',
-    themeOverride,
+    classNames,
     headless = false,
     className,
 
@@ -95,9 +96,10 @@ export function EmailTemplatePanel(props: EmailTemplatePanelProps) {
   return (
     <ThemeRoot
       theme={theme}
-      themeOverride={themeOverride}
+      classNames={classNames}
+      themedClassNames={panelThemes[theme]}
       headless={headless}
-      className={cn('ec-panel-root', className)}
+      className={cn('ec-panel-root', className, classNames?.root)}
       dataScope="panel"
     >
       <div data-ec-panel="">
@@ -119,9 +121,7 @@ export function EmailTemplatePanel(props: EmailTemplatePanelProps) {
           >
             <PanelShell
               asDialog={asDialog}
-              headless={headless}
               theme={theme}
-              themeOverride={themeOverride}
               open={open}
               defaultOpen={defaultOpen}
               onOpenChange={onOpenChange}
@@ -140,9 +140,14 @@ export function EmailTemplatePanel(props: EmailTemplatePanelProps) {
 
 function PanelBody() {
   const view = usePanelStore((s) => s.view)
+  const [bodyT, bodyU] = useSlot('body')
 
   return (
-    <div data-ec-panel-body="" data-ec-view={view}>
+    <div
+      data-ec-panel-body=""
+      data-ec-view={view}
+      className={cn(bodyT, bodyU)}
+    >
       {view === 'library' ? <LibraryView /> : <TemplateEditor />}
     </div>
   )

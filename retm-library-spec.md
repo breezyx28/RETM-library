@@ -58,13 +58,13 @@ RETM Library is an embeddable React component library for visual email template 
   // Template organization
   organizationMode="both"  // "tags" | "folders" | "both"
 
-  // Theming — see Section 18 for full reference
+  // Theming — see Section 19 for full reference (Tailwind v4 native)
   theme="default"          // "default" | "minimal" | "dark" | "editorial" | "brutalist" | "glassmorphism"
-  themeOverride={{         // CSS variable overrides on top of any theme
-    "--ec-primary": "#7c3aed",
-    "--ec-radius": "4px",
+  classNames={{            // typed slot map of Tailwind utility class strings
+    controls: { btnPrimary: "bg-violet-600 hover:bg-violet-700 rounded-full" },
+    library: { card: "shadow-lg ring-1 ring-violet-100" },
   }}
-  headless={false}         // true = zero styles shipped, developer owns all CSS
+  headless={false}         // true = zero default classes; consumer fully owns styling
 
   readOnly={false}
   defaultOpen={false}
@@ -101,7 +101,7 @@ import { EmailTemplateViewer } from 'retm-library'
 
   // Same theming system as panel
   theme="default"
-  themeOverride={{ "--ec-primary": "#7c3aed" }}
+  classNames={{ controls: { btnPrimary: "bg-violet-600" } }}
   headless={false}
 
   // Callback when user copies the code
@@ -727,57 +727,92 @@ Strategies applied on HTML export:
 
 ## 19. Theming System
 
-RETM Library uses a **three-tier theming model**: choose a built-in theme, override specific tokens, or go fully headless.
+RETM Library is **Tailwind CSS v4 native**. There are three independent layers of customization, all of which compose:
 
 ### Tier 1 — Built-in Theme (default)
 ```jsx
 <EmailTemplatePanel theme="default" />
 ```
-Ships with 6 pre-defined themes (see Section 20). The `default` theme is used if no `theme` prop is passed.
+Ships with 6 pre-defined themes (see Section 20). The `default` theme is used if no `theme` prop is passed. The theme name flows through `data-ec-theme="..."` on the root, which the CSS in `theme.css` uses to swap surface tokens (`--color-ec-*`).
 
-### Tier 2 — CSS Variable Overrides
-Any built-in theme can be customized by overriding specific design tokens. These map 1:1 to CSS custom properties scoped under `.retm-library-root`:
+### Tier 2 — Slot `classNames` (typed Tailwind utility classes)
+Any internal component element exposes a stable slot key. Pass utility classes per slot via `classNames`. Library defaults + theme defaults + your classes are merged with `tailwind-merge` so user utilities always win:
 
 ```jsx
 <EmailTemplatePanel
   theme="default"
-  themeOverride={{
-    "--ec-primary":        "#7c3aed",   // primary action color (buttons, active states)
-    "--ec-primary-hover":  "#6d28d9",
-    "--ec-accent":         "#f59e0b",   // chip highlight, badges
-    "--ec-bg":             "#ffffff",   // panel background
-    "--ec-bg-secondary":   "#f9fafb",   // sidebar, toolbar backgrounds
-    "--ec-bg-tertiary":    "#f3f4f6",   // canvas background
-    "--ec-border":         "#e5e7eb",   // all border colors
-    "--ec-text":           "#111827",   // primary text
-    "--ec-text-secondary": "#6b7280",   // labels, meta text
-    "--ec-radius":         "8px",       // base border radius
-    "--ec-radius-sm":      "4px",
-    "--ec-radius-lg":      "12px",
-    "--ec-font":           "'Inter', sans-serif",
-    "--ec-font-mono":      "'Fira Code', monospace",  // code view
-    "--ec-shadow":         "0 1px 3px rgba(0,0,0,0.08)",
+  classNames={{
+    controls: {
+      btnPrimary: "bg-violet-600 hover:bg-violet-700 rounded-full",
+      input: "rounded-xl border-violet-200 focus:border-violet-400",
+    },
+    library: {
+      card: "shadow-lg ring-1 ring-violet-100",
+      title: "text-violet-900",
+    },
+    editor: {
+      toolbar: "border-b-2 border-violet-200 bg-white/80 backdrop-blur-md",
+      canvas: "bg-violet-50/30",
+    },
+    dialogs: {
+      shellDialog: "rounded-2xl",
+    },
   }}
 />
 ```
 
-For Tailwind-based projects, a config preset synchronizes these tokens with Tailwind's design system:
-```js
-// tailwind.config.js
-module.exports = {
-  presets: [require('retm-library/tailwind-preset')],
-  // retm-library tokens become available as Tailwind utilities
-  // e.g. bg-ec-primary, text-ec-secondary, rounded-ec
+Slot map shape (TypeScript):
+```ts
+import type {
+  EmailTemplatePanelClassNames,
+  PanelControlsSlots,
+  PanelEditorSlots,
+  PanelLibrarySlots,
+  PanelDialogsSlots,
+} from 'retm-library'
+```
+
+For arbitrary attribute-based pierce-through targeting, the `root` slot accepts arbitrary Tailwind selectors:
+```jsx
+classNames={{
+  root: "[&_[data-ec-card]]:rounded-2xl [&_[data-ec-btn][data-ec-variant=primary]]:bg-emerald-600",
+}}
+```
+
+### Tier 3 — `@theme` Token Overrides (Tailwind v4 source)
+For deeper customization, import the source theme into your Tailwind v4 setup and override the tokens directly. Both built-in components and your own utility classes (e.g. `bg-ec-primary`) pick up the change:
+
+```css
+/* your-app/src/app.css */
+@import 'tailwindcss';
+@import 'retm-library/theme.css';
+
+@theme {
+  --color-ec-primary:        #7c3aed;   /* primary action color */
+  --color-ec-primary-hover:  #6d28d9;
+  --color-ec-accent:         #f59e0b;   /* chip highlight, badges */
+  --color-ec-bg:             #ffffff;   /* panel background */
+  --color-ec-bg-secondary:   #f9fafb;   /* sidebar, toolbar backgrounds */
+  --color-ec-bg-tertiary:    #f3f4f6;   /* canvas background */
+  --color-ec-border:         #e5e7eb;
+  --color-ec-text:           #111827;
+  --color-ec-text-secondary: #6b7280;
+  --radius-ec:               8px;       /* base border radius */
+  --radius-ec-sm:            4px;
+  --radius-ec-lg:            12px;
+  --font-ec:                 'Inter', sans-serif;
+  --font-ec-mono:            'Fira Code', monospace;
+  --shadow-ec:               0 1px 3px rgba(0,0,0,0.08);
 }
 ```
 
-### Tier 3 — Headless Mode
-Zero styles are shipped. The developer owns all CSS completely. RETM Library only renders semantic HTML structure with stable `data-ec-*` attributes for targeting:
+### Headless Mode
+When you want to fully own styling with your own design system, pass `headless` and the library will skip emitting any built-in default class strings. Only `data-ec-*` attributes plus your `classNames` apply:
 ```jsx
-<EmailTemplatePanel headless={true} />
+<EmailTemplatePanel headless={true} classNames={{ /* your full design system */ }} />
 ```
 ```css
-/* Developer's own stylesheet */
+/* Developer's own stylesheet, e.g. with their own Tailwind setup */
 [data-ec-panel]          { /* outer dialog wrapper */ }
 [data-ec-toolbar]        { /* top toolbar */ }
 [data-ec-sidebar]        { /* left blocks/variables panel */ }
@@ -787,7 +822,6 @@ Zero styles are shipped. The developer owns all CSS completely. RETM Library onl
 [data-ec-block]          { /* each content block */ }
 [data-ec-block-selected] { /* currently selected block */ }
 ```
-Headless mode is for teams with a strict design system who want RETM Library's logic with their own visual language entirely.
 
 ---
 

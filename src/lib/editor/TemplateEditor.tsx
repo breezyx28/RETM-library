@@ -27,6 +27,8 @@ import { EditorRightPanel } from './EditorRightPanel'
 import { EditorToolbar } from './EditorToolbar'
 import { PreviewFrame } from './PreviewFrame'
 import { PresetInsertDialog } from './PresetInsertDialog'
+import { useSlot } from '../theme'
+import { cn } from '../../utils/cn'
 import type { EmailPreset } from './presets/emailPresets'
 import { newBlockId } from '../types/editorDocument'
 
@@ -517,7 +519,7 @@ export function TemplateEditor() {
   }
 
   return (
-    <div data-ec-template-editor="" className="ec-template-editor">
+    <EditorChrome>
       <EditorToolbar
         templateName={name}
         onBack={backToLibrary}
@@ -531,8 +533,8 @@ export function TemplateEditor() {
         readOnly={readOnly}
         saving={saving}
       />
-      <div className="ec-editor-shell">
-      <div className="ec-editor-grid">
+      <EditorShell>
+      <EditorGrid>
         <EditorLeftPanel
           work={work}
           onChange={setWork}
@@ -550,7 +552,7 @@ export function TemplateEditor() {
           }}
           onPickPreset={(preset) => setPendingPreset(preset)}
         />
-        <div className="ec-editor-center" data-ec-canvas-wrap="">
+        <EditorCenter>
           <div className="ec-editor-faux-email">600px</div>
           <BlockCanvas
             work={work}
@@ -567,7 +569,7 @@ export function TemplateEditor() {
               setSaveSnippetOpen(true)
             }}
           />
-        </div>
+        </EditorCenter>
         <EditorRightPanel
           work={work}
           onChange={setWork}
@@ -618,8 +620,8 @@ export function TemplateEditor() {
           diffRightHtml={compareRight?.html ?? ''}
           onAppendAttachmentToCanvas={appendAttachmentToCanvasBottom}
         />
-      </div>
-      </div>
+      </EditorGrid>
+      </EditorShell>
       {previewOpen ? (
         <div className="ec-preview-modal" role="dialog" aria-modal="true">
           <div className="ec-preview-modal__toolbar">
@@ -953,6 +955,47 @@ export function TemplateEditor() {
           </div>
         </div>
       ) : null}
+    </EditorChrome>
+  )
+}
+
+/* --------------------------------------------------------------------------
+ * Slot-aware shell wrappers used by `<TemplateEditor />`. Each pulls its own
+ * slot from `useSlot(...)` and merges with the legacy `ec-*` class so the
+ * Tailwind v4 component layer styles still apply.
+ * ------------------------------------------------------------------------ */
+
+function EditorChrome({ children }: { children: React.ReactNode }) {
+  const [t, u] = useSlot('editor.root')
+  return (
+    <div
+      data-ec-template-editor=""
+      className={cn('ec-template-editor', t, u)}
+    >
+      {children}
+    </div>
+  )
+}
+
+function EditorShell({ children }: { children: React.ReactNode }) {
+  const [t, u] = useSlot('editor.shell')
+  return <div className={cn('ec-editor-shell', t, u)}>{children}</div>
+}
+
+function EditorGrid({ children }: { children: React.ReactNode }) {
+  // No dedicated slot for the inner grid; reuse `editor.shell` if needed via
+  // CSS, but keep the layout class for now.
+  return <div className="ec-editor-grid">{children}</div>
+}
+
+function EditorCenter({ children }: { children: React.ReactNode }) {
+  const [t, u] = useSlot('editor.canvasWrap')
+  return (
+    <div
+      className={cn('ec-editor-center', t, u)}
+      data-ec-canvas-wrap=""
+    >
+      {children}
     </div>
   )
 }

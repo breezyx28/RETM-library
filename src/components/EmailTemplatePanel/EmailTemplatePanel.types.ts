@@ -6,9 +6,9 @@ import type {
   Template,
   TemplateVersion,
   ThemeName,
-  ThemeOverride,
 } from '../../types'
 import type { SavedBlock } from '../../lib/types/savedBlock'
+import type { EmailTemplatePanelClassNames } from '../../lib/theme'
 
 export type StorageMode = 'backend' | 'local' | 'hybrid'
 
@@ -40,21 +40,22 @@ export interface ExportPayload {
 }
 
 /**
- * Props for `<EmailTemplatePanel>` (spec §3.1).
+ * Props for `<EmailTemplatePanel>` (spec ?3.1).
  *
- * Every feature behind these props is implemented progressively across
- * phases 1–3 (spec §23). The full surface is declared now so consumers can
- * compile-check against the final shape.
+ * Tailwind CSS v4 native: pass utility classes per slot via `classNames`.
+ * For deeper customization of design tokens, override the `@theme` block in
+ * your own Tailwind setup (or import `'retm-library/theme.css'` and override
+ * there).
  */
 export interface EmailTemplatePanelProps {
   // Schema
   variableSchema: VariableSchema
 
-  // Token format (spec §6)
+  // Token format (spec ?6)
   tokenFormat?: TokenFormat
   customTokenFormat?: CustomTokenFormat
 
-  // Storage (spec §9.6)
+  // Storage (spec ?9.6)
   storageMode?: StorageMode
   onSave?: (template: Template) => void | Promise<void>
   onLoad?: () => Promise<Template[]> | Template[]
@@ -69,30 +70,46 @@ export interface EmailTemplatePanelProps {
   onSaveSavedBlock?: (savedBlock: SavedBlock) => void | Promise<void>
   onDeleteSavedBlock?: (savedBlockId: string) => void | Promise<void>
 
-  // Sample data used for Hydrated Preview (spec §8)
+  // Sample data used for Hydrated Preview (spec ?8)
   sampleData?: Record<string, unknown>
 
-  // Multi-language (spec §5)
+  // Multi-language (spec ?5)
   supportedLanguages?: string[]
   defaultLanguage?: string
   rtlLanguages?: string[]
 
-  // Permissions (spec §13)
+  // Permissions (spec ?13)
   userRole?: UserRole
   publishMode?: PublishMode
 
-  // Template organization (spec §6.1)
+  // Template organization (spec ?6.1)
   organizationMode?: OrganizationMode
 
-  // Theming (spec §19)
+  // Theming (spec ?19)
+  /** Built-in theme name. Activates the matching `[data-ec-theme="..."]` block in `theme.css`. */
   theme?: ThemeName
-  themeOverride?: ThemeOverride
+  /**
+   * Per-slot Tailwind utility class overrides. Mirrors the internal slot
+   * structure; see `EmailTemplatePanelClassNames`.
+   *
+   * Example:
+   *   classNames={{
+   *     controls: { btnPrimary: 'bg-blue-500 hover:bg-blue-600 rounded-full' },
+   *     editor: { toolbar: 'border-b-2 border-blue-200' },
+   *   }}
+   */
+  classNames?: EmailTemplatePanelClassNames
+  /**
+   * Skip emitting the library's built-in default class strings ? only
+   * `data-ec-*` attributes plus your `classNames` are applied. Use this when
+   * you want to fully own styling with your own design system.
+   */
   headless?: boolean
 
   // Editor-level flags
   readOnly?: boolean
 
-  // Mounting (spec §6 "Dialog (configurable)")
+  // Mounting (spec ?6 "Dialog (configurable)")
   /** When true (default) the panel renders inside a Radix Dialog. */
   asDialog?: boolean
   /** Controlled open state. Ignored when `asDialog={false}`. */
@@ -107,7 +124,7 @@ export interface EmailTemplatePanelProps {
    */
   trigger?: ReactNode
 
-  // Persistence key for localStorage mode (spec §9.6)
+  // Persistence key for localStorage mode (spec ?9.6)
   /** Override the localStorage key used in `storageMode="local"`. */
   storageKey?: string
 

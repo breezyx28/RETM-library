@@ -2,11 +2,11 @@ import type {
   CustomTokenFormat,
   Template,
   ThemeName,
-  ThemeOverride,
   TokenFormat,
   VariableSchema,
 } from '../../types'
 import type { StorageMode } from '../EmailTemplatePanel/EmailTemplatePanel.types'
+import type { EmailTemplateViewerClassNames } from '../../lib/theme'
 
 export type ViewerDefaultView = 'grid' | 'list'
 
@@ -26,6 +26,8 @@ export interface ViewerCodeViewConfig {
  *
  * Read-only browser for published templates — no create/edit/delete controls
  * are ever rendered regardless of prop configuration.
+ *
+ * Tailwind CSS v4 native: pass utility classes per slot via `classNames`.
  */
 export interface EmailTemplateViewerProps {
   // Storage — viewer always loads (never saves) (spec §21)
@@ -57,8 +59,14 @@ export interface EmailTemplateViewerProps {
   codeView?: ViewerCodeViewConfig
 
   // Theming (spec §19)
+  /** Built-in theme name. Activates the matching `[data-ec-theme="..."]` block in `theme.css`. */
   theme?: ThemeName
-  themeOverride?: ThemeOverride
+  /**
+   * Per-slot Tailwind utility class overrides. See
+   * `EmailTemplateViewerClassNames` for the shape.
+   */
+  classNames?: EmailTemplateViewerClassNames
+  /** Skip built-in default classes; rely entirely on `classNames`. */
   headless?: boolean
 
   // Callback when the user copies code from the code pane

@@ -38,8 +38,17 @@ export type {
   TemplateVersion,
   VersionType,
   ThemeName,
-  ThemeOverride,
 } from './types'
+
+export type {
+  EmailTemplatePanelClassNames,
+  EmailTemplateViewerClassNames,
+  PanelControlsSlots,
+  PanelDialogsSlots,
+  PanelEditorSlots,
+  PanelLibrarySlots,
+  ViewerSlots,
+} from './lib/theme'
 
 export { formatVariableKey } from './lib/tokens/formatToken'
 export { exportTemplate } from './lib/export'

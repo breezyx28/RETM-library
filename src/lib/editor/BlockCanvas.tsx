@@ -6,6 +6,9 @@ import { LoopBlockView } from './blocks/LoopBlockView'
 import { EditorFormatBar } from './EditorFormatBar'
 import { resolveAttachmentFileVisual } from './attachmentFileIcons'
 import { usePanelStore } from '../store'
+import { useSlot } from '../theme'
+import { Btn } from '../ui'
+import { cn } from '../../utils/cn'
 
 export interface BlockCanvasProps {
   work: EditorDocumentV1
@@ -48,17 +51,31 @@ export function BlockCanvas({
   const reusableTarget =
     canvasBlocks.find((block) => block.id === selectedBlockId) ?? canvasBlocks[0] ?? null
 
+  const [outerT, outerU] = useSlot('editor.canvasOuter')
+  const [canvasT, canvasU] = useSlot('editor.canvas')
+  const [nodeT, nodeU] = useSlot('editor.canvasNode')
+
   return (
-    <div data-ec-canvas-outer="" className="ec-canvas-outer">
+    <div
+      data-ec-canvas-outer=""
+      className={cn('ec-canvas-outer', outerT, outerU)}
+    >
       <div className="ec-composer-chrome" data-ec-composer-chrome="">
         <span className="ec-composer-chrome__label">Body</span>
       </div>
       {getActiveEditor ? (
         <EditorFormatBar getActiveEditor={getActiveEditor} readOnly={readOnly} />
       ) : null}
-      <div data-ec-canvas-scroller="" className="ec-canvas-scroller ec-composer-body">
+      <div
+        data-ec-canvas-scroller=""
+        className={cn('ec-canvas-scroller ec-composer-body', canvasT, canvasU)}
+      >
         {canvasBlocks.map((block) => (
-          <div key={block.id} className="ec-composer-node" data-ec-canvas-node="">
+          <div
+            key={block.id}
+            className={cn('ec-composer-node', nodeT, nodeU)}
+            data-ec-canvas-node=""
+          >
             {block.type === 'text' && (
               <TextBlockEditor
                 blockId={block.id}
@@ -128,17 +145,15 @@ export function BlockCanvas({
       </div>
       {onSaveReusableBlock ? (
         <div className="ec-canvas-floating-actions">
-          <button
-            type="button"
-            data-ec-btn=""
-            data-ec-variant="ghost"
+          <Btn
+            variant="ghost"
             disabled={readOnly || !reusableTarget}
             onClick={() => {
               if (reusableTarget) onSaveReusableBlock(reusableTarget)
             }}
           >
-            Save as reusable
-          </button>
+            Save
+          </Btn>
         </div>
       ) : null}
     </div>
